@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Society Connect",
+    "slug": "society-connect-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#090D16"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.societyconnect.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#090D16"
+      },
+      "package": "com.societyconnect.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiUrl": "http://10.0.2.2:5000/api",
+      "productionApiUrl": "https://society-connect-backend.onrender.com/api"
+    }
+  }
+}
