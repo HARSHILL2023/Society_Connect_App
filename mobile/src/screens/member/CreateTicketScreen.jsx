@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +16,7 @@ import { COLORS, SPACING, RADIUS, TYPOGRAPHY, CATEGORIES, PRIORITIES } from '../
 import Header from '../../components/common/Header';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import SuccessModal from '../../components/common/SuccessModal';
 
 export const CreateTicketScreen = ({ navigation }) => {
   const { user } = useAuth();
@@ -26,6 +26,7 @@ export const CreateTicketScreen = ({ navigation }) => {
   const [priority, setPriority] = useState('Medium');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleCreateTicket = async () => {
     if (!title.trim()) {
@@ -66,22 +67,21 @@ export const CreateTicketScreen = ({ navigation }) => {
       setCategory('');
       setPriority('Medium');
 
-      Alert.alert(
-        'Complaint Raised Successfully!',
-        'Your ticket has been logged and the society management desk has been notified.',
-        [
-          {
-            text: 'View My Tickets',
-            onPress: () => navigation.navigate('TicketsTab'),
-          },
-        ]
-      );
+      setShowSuccessModal(true);
     } catch (error) {
       const msg = getErrorMessage(error);
       setErrorMessage(msg);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewMyTickets = () => {
+    navigation.navigate('TicketsTab');
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
   };
 
   return (
@@ -220,6 +220,17 @@ export const CreateTicketScreen = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <SuccessModal
+        visible={showSuccessModal}
+        onClose={handleSuccessModalClose}
+        title="Complaint Raised Successfully!"
+        message="Your complaint has been submitted successfully."
+        primaryButtonText="View My Tickets"
+        onPrimaryPress={handleViewMyTickets}
+        secondaryButtonText="Done"
+        onSecondaryPress={handleSuccessModalClose}
+      />
     </SafeAreaView>
   );
 };
