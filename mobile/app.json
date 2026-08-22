@@ -28,6 +28,9 @@
     "extra": {
       "apiUrl": "http://10.0.2.2:5000/api",
       "productionApiUrl": "https://society-connect-backend.onrender.com/api"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
