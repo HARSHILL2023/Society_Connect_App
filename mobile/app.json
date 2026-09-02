@@ -2,6 +2,7 @@
   "expo": {
     "name": "Society Connect",
     "slug": "society-connect-app",
+    "scheme": "society-connect",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,24 +14,59 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.societyconnect.app"
+      "bundleIdentifier": "com.societyconnect.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Society Connect needs camera access to capture complaint evidence photos.",
+        "NSLocationWhenInUseUsageDescription": "Society Connect needs location access to attach complaint location.",
+        "NSPhotoLibraryUsageDescription": "Society Connect needs photo library access to attach complaint evidence from gallery."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#090D16"
       },
-      "package": "com.societyconnect.app"
+      "package": "com.societyconnect.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "http://10.0.2.2:5000/api",
+      "apiUrl": "http://192.168.1.238:5000/api",
       "productionApiUrl": "https://society-connect-backend.onrender.com/api"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-audio",
+      "expo-asset",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Society Connect needs camera access to capture complaint evidence."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Society Connect needs photo library access to attach evidence images."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Society Connect needs location to attach complaint location.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ],
+      "expo-router"
     ]
   }
 }
