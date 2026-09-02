@@ -8,10 +8,29 @@ const ApiError = require('../utils/ApiError');
  * Member only — raise a new ticket
  */
 const createTicket = asyncHandler(async (req, res) => {
-  const { title, description, category, priority } = req.body;
+  const { title, description, category, priority, evidenceImage, location } = req.body;
 
   if (!req.user.flatNumber) {
     throw ApiError.badRequest('Your account does not have a flat number assigned.');
+  }
+
+  // Optional evidence: limit base64 size ~2MB string to protect DB
+  let safeEvidence = '';
+  if (evidenceImage && typeof evidenceImage === 'string') {
+    if (evidenceImage.length > 2_500_000) {
+      throw ApiError.badRequest('Evidence image is too large. Please use a smaller image.');
+    }
+    safeEvidence = evidenceImage;
+  }
+
+  // Optional location
+  let safeLocation = undefined;
+  if (location && typeof location === 'object') {
+    safeLocation = {
+      latitude: typeof location.latitude === 'number' ? location.latitude : null,
+      longitude: typeof location.longitude === 'number' ? location.longitude : null,
+      address: typeof location.address === 'string' ? location.address.slice(0, 300) : '',
+    };
   }
 
   const ticket = await Ticket.create({
@@ -21,6 +40,8 @@ const createTicket = asyncHandler(async (req, res) => {
     priority: priority || 'Medium',
     flatNumber: req.user.flatNumber,
     raisedBy: req.user._id,
+    evidenceImage: safeEvidence,
+    ...(safeLocation ? { location: safeLocation } : {}),
   });
 
   const populated = await ticket.populate('raisedBy', 'name email flatNumber phone');
@@ -33,7 +54,7 @@ const createTicket = asyncHandler(async (req, res) => {
  * Member only — get own tickets
  */
 const getMyTickets = asyncHandler(async (req, res) => {
-  const { status, category, search } = req.query;
+  const { status, category, search, page = 1, limit = 10 } = req.query;
   const filter = { raisedBy: req.user._id };
 
   if (status && status !== 'All') {
@@ -49,11 +70,28 @@ const getMyTickets = asyncHandler(async (req, res) => {
     ];
   }
 
-  const tickets = await Ticket.find(filter)
-    .populate('raisedBy', 'name email flatNumber phone')
-    .sort({ createdAt: -1 });
+  const pageNum = Math.max(1, parseInt(page, 10));
+  const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
+  const skip = (pageNum - 1) * limitNum;
 
-  return ApiResponse.ok(res, 'Tickets retrieved successfully.', tickets);
+  const [tickets, total] = await Promise.all([
+    Ticket.find(filter)
+      .populate('raisedBy', 'name email flatNumber phone')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum),
+    Ticket.countDocuments(filter),
+  ]);
+
+  return ApiResponse.ok(res, 'Tickets retrieved successfully.', {
+    tickets,
+    pagination: {
+      page: pageNum,
+      limit: limitNum,
+      total,
+      totalPages: Math.ceil(total / limitNum),
+    },
+  });
 });
 
 /**
@@ -61,7 +99,7 @@ const getMyTickets = asyncHandler(async (req, res) => {
  * Manager & Admin — get all tickets in society
  */
 const getAllTickets = asyncHandler(async (req, res) => {
-  const { status, category, search } = req.query;
+  const { status, category, search, page = 1, limit = 10 } = req.query;
   const filter = {};
 
   if (status && status !== 'All') {
@@ -78,11 +116,28 @@ const getAllTickets = asyncHandler(async (req, res) => {
     ];
   }
 
-  const tickets = await Ticket.find(filter)
-    .populate('raisedBy', 'name email flatNumber phone')
-    .sort({ createdAt: -1 });
+  const pageNum = Math.max(1, parseInt(page, 10));
+  const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
+  const skip = (pageNum - 1) * limitNum;
 
-  return ApiResponse.ok(res, 'All tickets retrieved successfully.', tickets);
+  const [tickets, total] = await Promise.all([
+    Ticket.find(filter)
+      .populate('raisedBy', 'name email flatNumber phone')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum),
+    Ticket.countDocuments(filter),
+  ]);
+
+  return ApiResponse.ok(res, 'All tickets retrieved successfully.', {
+    tickets,
+    pagination: {
+      page: pageNum,
+      limit: limitNum,
+      total,
+      totalPages: Math.ceil(total / limitNum),
+    },
+  });
 });
 
 /**
@@ -136,6 +191,43 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 });
 
 /**
+ * PATCH /api/tickets/:id/assign
+ * Manager & Admin — assign ticket to a manager
+ */
+const assignTicket = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { assignedTo } = req.body;
+
+  const ticket = await Ticket.findById(id);
+  if (!ticket) {
+    throw ApiError.notFound('Ticket not found.');
+  }
+
+  // Verify the assigned user exists and is a Manager
+  const User = require('../models/User');
+  const manager = await User.findById(assignedTo);
+  if (!manager) {
+    throw ApiError.notFound('Manager not found.');
+  }
+  if (manager.role !== 'Manager') {
+    throw ApiError.badRequest('Can only assign tickets to users with Manager role.');
+  }
+
+  ticket.assignedTo = assignedTo;
+  // If ticket was Pending, move to In Progress when assigned
+  if (ticket.status === 'Pending') {
+    ticket.status = 'In Progress';
+  }
+
+  await ticket.save();
+
+  const updated = await ticket.populate('raisedBy', 'name email flatNumber phone')
+    .populate('assignedTo', 'name email');
+
+  return ApiResponse.ok(res, `Ticket assigned to ${manager.name}.`, updated);
+});
+
+/**
  * DELETE /api/tickets/:id
  * Admin only — delete ticket
  */
@@ -158,5 +250,6 @@ module.exports = {
   getAllTickets,
   getTicketById,
   updateTicketStatus,
+  assignTicket,
   deleteTicket,
 };
