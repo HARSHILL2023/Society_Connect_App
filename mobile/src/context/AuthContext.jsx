@@ -9,29 +9,26 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Restore authentication state from storage on app launch
   useEffect(() => {
     const restoreSession = async () => {
       try {
-        const storedToken = await storage.getToken();
-        const storedUser = await storage.getUser();
+        const savedToken = await storage.getToken();
+        const savedUser = await storage.getUser();
 
-        if (storedToken && storedUser) {
-          setToken(storedToken);
-          setUser(storedUser);
+        if (savedToken && savedUser) {
+          setToken(savedToken);
+          setUser(savedUser);
 
-          // Verify token validity in background
-          authAPI.getMe()
-            .then((freshUser) => {
-              setUser(freshUser);
-              storage.setUser(freshUser);
-            })
-            .catch(() => {
-              // Token invalid/expired - handled by response interceptor
-            });
+          try {
+            const freshUser = await authAPI.getMe();
+            setUser(freshUser);
+            await storage.setUser(freshUser);
+          } catch (e) {
+            // Token invalid - will be cleared by 401 handler
+          }
         }
       } catch (e) {
-        console.error('Session restoration failed:', e);
+        console.error('Session restore failed:', e);
       } finally {
         setIsLoading(false);
       }
@@ -39,35 +36,33 @@ export const AuthProvider = ({ children }) => {
 
     restoreSession();
 
-    // Register callback for 401 Unauthorized responses
     setOnUnauthorizedCallback(() => {
       setUser(null);
       setToken(null);
     });
   }, []);
 
-  const login = async (email, password) => {
-    const data = await authAPI.login(email, password);
-    const tokenToStore = data.token || data.accessToken;
-    const refresh = data.refreshToken || null;
-    await storage.setToken(tokenToStore);
-    if (refresh) await storage.setRefreshToken(refresh);
+  const saveAuth = async (data) => {
+    const newToken = data.token || data.accessToken;
+    const refreshToken = data.refreshToken || null;
+
+    await storage.setToken(newToken);
+    if (refreshToken) await storage.setRefreshToken(refreshToken);
     await storage.setUser(data.user);
-    setToken(tokenToStore);
+
+    setToken(newToken);
     setUser(data.user);
     return data.user;
   };
 
+  const login = async (email, password) => {
+    const data = await authAPI.login(email, password);
+    return saveAuth(data);
+  };
+
   const register = async (userData) => {
     const data = await authAPI.register(userData);
-    const tokenToStore = data.token || data.accessToken;
-    const refresh = data.refreshToken || null;
-    await storage.setToken(tokenToStore);
-    if (refresh) await storage.setRefreshToken(refresh);
-    await storage.setUser(data.user);
-    setToken(tokenToStore);
-    setUser(data.user);
-    return data.user;
+    return saveAuth(data);
   };
 
   const logout = async () => {
@@ -100,9 +95,7 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be inside AuthProvider');
   return context;
 };
 
