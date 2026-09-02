@@ -15,76 +15,64 @@ import TicketTimeline from '../../src/components/ticket/TicketTimeline';
 import TicketStaffActions from '../../src/components/ticket/TicketStaffActions';
 import TicketEvidence from '../../src/components/ticket/TicketEvidence';
 
-// Dynamic route: app/ticket/[id].jsx
-// Access via router.push(`/ticket/${ticketId}`)
-// Params available via useLocalSearchParams()
 export default function TicketDetail() {
   const { id } = useLocalSearchParams();
-  const ticketId = id;
   const { user } = useAuth();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [statusModalVisible, setStatusModalVisible] = useState(false);
-  const [selectedNextStatus, setSelectedNextStatus] = useState('');
-  const [statusNote, setStatusNote] = useState('');
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [nextStatus, setNextStatus] = useState('');
+  const [note, setNote] = useState('');
 
   const isStaff = user?.role === 'Manager' || user?.role === 'Admin';
 
   const loadTicket = async () => {
     try {
-      const data = await ticketAPI.getTicketById(ticketId);
+      const data = await ticketAPI.getTicketById(id);
       setTicket(data);
-      setStatusNote(data.statusNote || '');
-    } catch (error) {
-      console.log('Error fetching ticket details:', error);
-      Alert.alert('Error', 'Unable to retrieve ticket details.', [
-        { text: 'Go Back', onPress: () => router.back() },
-      ]);
+      setNote(data.statusNote || '');
+    } catch (e) {
+      Alert.alert('Error', 'Could not load ticket.', [{ text: 'Go Back', onPress: () => router.back() }]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (ticketId) loadTicket();
-  }, [ticketId]);
+    if (id) loadTicket();
+  }, [id]);
 
-  const handleOpenStatusModal = (nextStatus) => {
-    setSelectedNextStatus(nextStatus);
-    setStatusModalVisible(true);
+  const openStatusModal = (status) => {
+    setNextStatus(status);
+    setShowStatusModal(true);
   };
 
-  const handleConfirmStatusUpdate = async () => {
-    if (!selectedNextStatus) return;
+  const handleUpdateStatus = async () => {
+    if (!nextStatus) return;
     setUpdating(true);
     try {
-      const updated = await ticketAPI.updateTicketStatus(ticketId, {
-        status: selectedNextStatus,
-        statusNote: statusNote.trim(),
+      const updated = await ticketAPI.updateTicketStatus(id, {
+        status: nextStatus,
+        statusNote: note.trim(),
       });
       setTicket(updated);
-      setStatusModalVisible(false);
-      Alert.alert('Success', `Ticket marked as ${selectedNextStatus}.`);
-    } catch (error) {
-      Alert.alert('Update Failed', getErrorMessage(error));
+      setShowStatusModal(false);
+      Alert.alert('Success', `Ticket marked as ${nextStatus}.`);
+    } catch (e) {
+      Alert.alert('Update Failed', getErrorMessage(e));
     } finally {
       setUpdating(false);
     }
   };
 
-  if (loading) {
-    return <LoadingScreen message="Loading ticket details..." />;
-  }
-
-  if (!ticket) {
-    return null;
-  }
+  if (loading) return <LoadingScreen message="Loading ticket..." />;
+  if (!ticket) return null;
 
   const header = (
     <Header
       title="Ticket Details"
-      subtitle={`ID: #${ticket.id ? ticket.id.substring(ticket.id.length - 6).toUpperCase() : 'TICKET'}`}
+      subtitle={`ID: #${(ticket.id || ticket._id || '').slice(-6).toUpperCase()}`}
       showBack
       onBackPress={() => router.back()}
     />
@@ -97,28 +85,27 @@ export default function TicketDetail() {
         <TicketEvidence ticket={ticket} />
         <TicketContactInfo ticket={ticket} />
         <TicketTimeline ticket={ticket} />
-        <TicketStaffActions ticket={ticket} isStaff={isStaff} onOpenStatusModal={handleOpenStatusModal} />
+        <TicketStaffActions ticket={ticket} isStaff={isStaff} onOpenStatusModal={openStatusModal} />
       </ScreenWrapper>
 
       <ModalDialog
-        visible={statusModalVisible}
-        onClose={() => setStatusModalVisible(false)}
-        title={`Set Status: ${selectedNextStatus}`}
+        visible={showStatusModal}
+        onClose={() => setShowStatusModal(false)}
+        title={`Set Status: ${nextStatus}`}
         confirmText="Update Status"
-        confirmVariant="primary"
         loading={updating}
-        onConfirm={handleConfirmStatusUpdate}
+        onConfirm={handleUpdateStatus}
       >
-        <View style={styles.modalInputGroup}>
-          <Text style={styles.modalInputLabel}>Maintenance Note (Optional)</Text>
+        <View style={styles.modalGroup}>
+          <Text style={styles.modalLabel}>Maintenance Note (Optional)</Text>
           <TextInput
-            placeholder="e.g. Electrician scheduled for tomorrow 10am / Replaced pipe washer"
+            placeholder="e.g. Electrician scheduled tomorrow 10am"
             placeholderTextColor={COLORS.textMuted}
-            value={statusNote}
-            onChangeText={setStatusNote}
+            value={note}
+            onChangeText={setNote}
             multiline
             numberOfLines={3}
-            style={styles.modalTextInput}
+            style={styles.modalInput}
           />
         </View>
       </ModalDialog>
@@ -128,9 +115,9 @@ export default function TicketDetail() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
-  modalInputGroup: { marginVertical: SPACING.sm },
-  modalInputLabel: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, marginBottom: SPACING.xs },
-  modalTextInput: {
+  modalGroup: { marginVertical: SPACING.sm },
+  modalLabel: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, marginBottom: SPACING.xs },
+  modalInput: {
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
