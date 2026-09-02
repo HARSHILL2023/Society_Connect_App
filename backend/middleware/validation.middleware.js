@@ -1,4 +1,5 @@
 const { body, param, validationResult } = require('express-validator');
+const { isValidObjectId } = require('mongoose');
 const ApiError = require('../utils/ApiError');
 
 const handleValidationErrors = (req, res, next) => {
@@ -9,6 +10,16 @@ const handleValidationErrors = (req, res, next) => {
   }
   next();
 };
+
+/**
+ * Custom validator for MongoDB ObjectId
+ */
+const validateObjectId = (field = 'id') => [
+  param(field)
+    .custom((value) => isValidObjectId(value))
+    .withMessage(`Invalid ${field} format.`),
+  handleValidationErrors,
+];
 
 /* ─── Auth Validators ─── */
 const validateRegister = [
@@ -39,6 +50,29 @@ const validateLogin = [
   handleValidationErrors,
 ];
 
+const validateRefresh = [
+  body('refreshToken')
+    .notEmpty().withMessage('Refresh token is required.'),
+  handleValidationErrors,
+];
+
+const validateForgotPassword = [
+  body('email')
+    .notEmpty().withMessage('Email is required.')
+    .isEmail().withMessage('Please provide a valid email address.')
+    .normalizeEmail(),
+  handleValidationErrors,
+];
+
+const validateResetPassword = [
+  body('token')
+    .notEmpty().withMessage('Reset token is required.'),
+  body('password')
+    .notEmpty().withMessage('New password is required.')
+    .isLength({ min: 6 }).withMessage('Password must be at least 6 characters.'),
+  handleValidationErrors,
+];
+
 /* ─── Ticket Validators ─── */
 const validateCreateTicket = [
   body('title')
@@ -57,6 +91,22 @@ const validateCreateTicket = [
     .optional()
     .isIn(['Low', 'Medium', 'High', 'Urgent'])
     .withMessage('Invalid priority.'),
+  body('evidenceImage')
+    .optional()
+    .isString().withMessage('Evidence image must be a string.'),
+  body('location')
+    .optional()
+    .isObject().withMessage('Location must be an object.'),
+  body('location.latitude')
+    .optional()
+    .isFloat({ min: -90, max: 90 }).withMessage('Invalid latitude.'),
+  body('location.longitude')
+    .optional()
+    .isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude.'),
+  body('location.address')
+    .optional()
+    .isString().withMessage('Address must be a string.')
+    .isLength({ max: 300 }).withMessage('Address too long.'),
   handleValidationErrors,
 ];
 
@@ -68,6 +118,13 @@ const validateUpdateStatus = [
   body('statusNote')
     .optional()
     .trim(),
+  handleValidationErrors,
+];
+
+const validateAssignTicket = [
+  body('assignedTo')
+    .notEmpty().withMessage('Assigned manager ID is required.')
+    .isMongoId().withMessage('Invalid manager ID format.'),
   handleValidationErrors,
 ];
 
@@ -103,9 +160,6 @@ const validateUpdateUser = [
     .optional()
     .isEmail().withMessage('Please provide a valid email address.')
     .normalizeEmail(),
-  body('password')
-    .optional()
-    .isLength({ min: 6 }).withMessage('Password must be at least 6 characters.'),
   body('role')
     .optional()
     .isIn(['Admin', 'Manager', 'Member']).withMessage('Role must be Admin, Manager, or Member.'),
@@ -116,11 +170,26 @@ const validateUpdateUser = [
   handleValidationErrors,
 ];
 
+const validateChangePassword = [
+  body('currentPassword')
+    .notEmpty().withMessage('Current password is required.'),
+  body('newPassword')
+    .notEmpty().withMessage('New password is required.')
+    .isLength({ min: 6 }).withMessage('New password must be at least 6 characters.'),
+  handleValidationErrors,
+];
+
 module.exports = {
   validateRegister,
   validateLogin,
+  validateRefresh,
+  validateForgotPassword,
+  validateResetPassword,
   validateCreateTicket,
   validateUpdateStatus,
+  validateAssignTicket,
   validateCreateUser,
   validateUpdateUser,
+  validateChangePassword,
+  validateObjectId,
 };
