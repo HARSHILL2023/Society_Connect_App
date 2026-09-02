@@ -9,7 +9,7 @@ const ApiError = require('../utils/ApiError');
  * Admin only — get all registered users
  */
 const getAllUsers = asyncHandler(async (req, res) => {
-  const { role, search } = req.query;
+  const { role, search, page = 1, limit = 10 } = req.query;
   const filter = {};
 
   if (role && role !== 'All') {
@@ -23,8 +23,24 @@ const getAllUsers = asyncHandler(async (req, res) => {
     ];
   }
 
-  const users = await User.find(filter).sort({ createdAt: -1 });
-  return ApiResponse.ok(res, 'Users retrieved successfully.', users);
+  const pageNum = Math.max(1, parseInt(page, 10));
+  const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
+  const skip = (pageNum - 1) * limitNum;
+
+  const [users, total] = await Promise.all([
+    User.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
+    User.countDocuments(filter),
+  ]);
+
+  return ApiResponse.ok(res, 'Users retrieved successfully.', {
+    users,
+    pagination: {
+      page: pageNum,
+      limit: limitNum,
+      total,
+      totalPages: Math.ceil(total / limitNum),
+    },
+  });
 });
 
 /**
@@ -81,13 +97,13 @@ const createUser = asyncHandler(async (req, res) => {
 
 /**
  * PUT /api/users/:id
- * Admin only — update user
+ * Admin only — update user (without password)
  */
 const updateUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, email, password, role, flatNumber, phone } = req.body;
+  const { name, email, role, flatNumber, phone } = req.body;
 
-  const user = await User.findById(id).select('+password');
+  const user = await User.findById(id);
   if (!user) {
     throw ApiError.notFound('User not found.');
   }
@@ -104,7 +120,6 @@ const updateUser = asyncHandler(async (req, res) => {
   if (name) user.name = name;
   if (role) user.role = role;
   if (phone !== undefined) user.phone = phone;
-  if (password) user.password = password;
 
   if (role === 'Member') {
     if (!flatNumber && !user.flatNumber) {
@@ -119,6 +134,47 @@ const updateUser = asyncHandler(async (req, res) => {
 
   const updated = await User.findById(user._id);
   return ApiResponse.ok(res, 'User updated successfully.', updated);
+});
+
+/**
+ * PUT /api/users/:id/password
+ * Admin only — change user password (requires current password verification)
+ */
+const changeUserPassword = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    throw ApiError.badRequest('Current password and new password are required.');
+  }
+
+  if (newPassword.length < 6) {
+    throw ApiError.badRequest('New password must be at least 6 characters.');
+  }
+
+  const user = await User.findById(id).select('+password');
+  if (!user) {
+    throw ApiError.notFound('User not found.');
+  }
+
+  // Verify current password
+  const isMatch = await user.comparePassword(currentPassword);
+  if (!isMatch) {
+    throw ApiError.unauthorized('Current password is incorrect.');
+  }
+
+  // Prevent admin from changing their own password via this endpoint
+  if (req.user._id.toString() === id && req.user.role === 'Admin') {
+    throw ApiError.badRequest('Admins should use the profile password change endpoint.');
+  }
+
+  user.password = newPassword;
+  // Invalidate all refresh tokens on password change
+  user.refreshToken = null;
+  user.refreshTokenExpires = null;
+  await user.save();
+
+  return ApiResponse.ok(res, 'Password changed successfully. All sessions invalidated.');
 });
 
 /**
@@ -153,5 +209,6 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
+  changeUserPassword,
   deleteUser,
 };
