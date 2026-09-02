@@ -36,10 +36,6 @@ export default function RootLayout() {
               name="camera/index"
               options={{ animation: 'slide_from_bottom' }}
             />
-            <Stack.Screen
-              name="location/index"
-              options={{ animation: 'slide_from_bottom' }}
-            />
           </Stack>
         </AuthProvider>
       </SafeAreaProvider>
