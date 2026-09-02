@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,27 +23,23 @@ export default function Home() {
     try {
       const data = await ticketAPI.getMyTickets();
       setTickets(data);
-    } catch (error) {
-      console.log('Error fetching member tickets:', error);
+    } catch (e) {
+      console.log('Error loading tickets:', e);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadTickets();
-  }, []);
-
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       loadTickets();
     }, [])
   );
 
-  const pendingCount = tickets.filter((t) => t.status === 'Pending').length;
-  const inProgressCount = tickets.filter((t) => t.status === 'In Progress').length;
-  const resolvedCount = tickets.filter((t) => t.status === 'Resolved').length;
-  const recentTickets = tickets.slice(0, 4);
+  const pending = tickets.filter((t) => t.status === 'Pending').length;
+  const inProgress = tickets.filter((t) => t.status === 'In Progress').length;
+  const resolved = tickets.filter((t) => t.status === 'Resolved').length;
+  const recent = tickets.slice(0, 4);
 
   const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
 
@@ -85,9 +81,9 @@ export default function Home() {
         <Text style={styles.sectionTitle}>Overview</Text>
         <View style={styles.statsGrid}>
           <StatCard title="Total Tickets" value={tickets.length} icon="documents-outline" iconColor={COLORS.primaryLight} onPress={() => router.push('/(drawer)/(tabs)/tickets')} />
-          <StatCard title="Pending Review" value={pendingCount} icon="time-outline" iconColor={COLORS.pending} onPress={() => router.push('/(drawer)/(tabs)/tickets')} />
-          <StatCard title="In Progress" value={inProgressCount} icon="construct-outline" iconColor={COLORS.inProgress} onPress={() => router.push('/(drawer)/(tabs)/tickets')} />
-          <StatCard title="Resolved" value={resolvedCount} icon="checkmark-circle-outline" iconColor={COLORS.resolved} onPress={() => router.push('/(drawer)/(tabs)/tickets')} />
+          <StatCard title="Pending Review" value={pending} icon="time-outline" iconColor={COLORS.pending} onPress={() => router.push('/(drawer)/(tabs)/tickets')} />
+          <StatCard title="In Progress" value={inProgress} icon="construct-outline" iconColor={COLORS.inProgress} onPress={() => router.push('/(drawer)/(tabs)/tickets')} />
+          <StatCard title="Resolved" value={resolved} icon="checkmark-circle-outline" iconColor={COLORS.resolved} onPress={() => router.push('/(drawer)/(tabs)/tickets')} />
         </View>
 
         <View style={styles.sectionHeaderRow}>
@@ -99,7 +95,7 @@ export default function Home() {
           )}
         </View>
 
-        {recentTickets.length === 0 && !loading ? (
+        {recent.length === 0 && !loading ? (
           <EmptyState
             icon="checkmark-done-circle-outline"
             title="No tickets raised yet"
@@ -108,7 +104,7 @@ export default function Home() {
             onActionPress={() => router.push('/(drawer)/(tabs)/raise-complaint')}
           />
         ) : (
-          recentTickets.map((ticket) => (
+          recent.map((ticket) => (
             <TicketCard
               key={ticket.id || ticket._id}
               ticket={ticket}
