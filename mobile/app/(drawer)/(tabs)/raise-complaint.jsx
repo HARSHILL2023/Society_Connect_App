@@ -22,7 +22,6 @@ import Button from '../../../src/components/common/Button';
 import SuccessModal from '../../../src/components/common/SuccessModal';
 import ErrorBanner from '../../../src/components/common/ErrorBanner';
 import ImageEvidencePicker from '../../../src/components/complaint/ImageEvidencePicker';
-import LocationSection from '../../../src/components/complaint/LocationSection';
 
 export default function RaiseComplaint() {
   const { user } = useAuth();
@@ -37,19 +36,14 @@ export default function RaiseComplaint() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [evidenceUri, setEvidenceUri] = useState(null);
   const [evidenceImage, setEvidenceImage] = useState('');
-  const [location, setLocation] = useState(null);
 
-  // Pick up evidence/location from camera/location screens via global
+  // Pick up evidence from camera screen via global
   useFocusEffect(
     React.useCallback(() => {
       if (global._cameraEvidence) {
         setEvidenceUri(global._cameraEvidence.uri);
         setEvidenceImage(global._cameraEvidence.base64);
         global._cameraEvidence = null;
-      }
-      if (global._selectedLocation) {
-        setLocation(global._selectedLocation);
-        global._selectedLocation = null;
       }
     }, [])
   );
@@ -71,7 +65,6 @@ export default function RaiseComplaint() {
         category,
         priority,
         evidenceImage: evidenceImage || undefined,
-        location: location || undefined,
       });
 
       setTitle('');
@@ -80,7 +73,6 @@ export default function RaiseComplaint() {
       setPriority('Medium');
       setEvidenceUri(null);
       setEvidenceImage('');
-      setLocation(null);
       setShowSuccessModal(true);
     } catch (error) {
       const msg = getErrorMessage(error);
@@ -159,8 +151,6 @@ export default function RaiseComplaint() {
               onChange={({ uri, base64 }) => { setEvidenceUri(uri); setEvidenceImage(base64); }}
               onOpenCamera={() => router.push('/camera')}
             />
-
-            <LocationSection location={location} onPick={() => router.push('/location')} onClear={() => setLocation(null)} />
 
             <Button title="Submit Complaint" onPress={handleCreateTicket} loading={loading} icon="paper-plane-outline" size="lg" style={styles.submitButton} />
           </View>
