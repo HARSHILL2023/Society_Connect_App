@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
@@ -18,41 +18,48 @@ export default function Tickets() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('All');
-  const [categoryFilter, setCategoryFilter] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [status, setStatus] = useState('All');
+  const [category, setCategory] = useState('All');
+  const [search, setSearch] = useState('');
 
   const loadTickets = async () => {
     try {
       const data = await ticketAPI.getMyTickets({
-        status: statusFilter !== 'All' ? statusFilter : undefined,
-        category: categoryFilter !== 'All' ? categoryFilter : undefined,
-        search: searchQuery.trim() || undefined,
+        status: status !== 'All' ? status : undefined,
+        category: category !== 'All' ? category : undefined,
+        search: search.trim() || undefined,
       });
       setTickets(data);
-    } catch (error) {
-      console.log('Failed fetching tickets:', error);
+    } catch (e) {
+      console.log('Failed to load tickets:', e);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
+  // Load when filters change
   useEffect(() => {
     loadTickets();
-  }, [statusFilter, categoryFilter]);
+  }, [status, category]);
 
+  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => loadTickets(), 300);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [search]);
 
-  useFocusEffect(useCallback(() => { loadTickets(); }, [statusFilter, categoryFilter, searchQuery]));
+  // Reload when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      loadTickets();
+    }, [status, category, search])
+  );
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = () => {
     setRefreshing(true);
     loadTickets();
-  }, [statusFilter, categoryFilter, searchQuery]);
+  };
 
   const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
 
@@ -70,21 +77,21 @@ export default function Tickets() {
       <View style={styles.searchContainer}>
         <Input
           placeholder="Search by title or description..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
+          value={search}
+          onChangeText={setSearch}
           icon="search-outline"
-          rightIcon={searchQuery ? 'close-circle-outline' : null}
-          onRightIconPress={() => setSearchQuery('')}
+          rightIcon={search ? 'close-circle-outline' : null}
+          onRightIconPress={() => setSearch('')}
           style={styles.searchInput}
         />
       </View>
 
       <View style={styles.filterSection}>
-        <StatusFilter selectedStatus={statusFilter} onSelectStatus={setStatusFilter} />
+        <StatusFilter selectedStatus={status} onSelectStatus={setStatus} />
       </View>
 
       <View style={styles.categoryFilterSection}>
-        <CategoryFilter selectedCategory={categoryFilter} onSelectCategory={setCategoryFilter} />
+        <CategoryFilter selectedCategory={category} onSelectCategory={setCategory} />
       </View>
 
       {loading && !refreshing ? (
