@@ -3,62 +3,39 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, Pressable } fro
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
 
-// Displays evidence image (if any) and location (if any)
-// Demonstrates Image component, Modal, conditional rendering, ActivityIndicator not needed here but could be added
+// Displays evidence image (if any)
 export const TicketEvidence = ({ ticket }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const hasImage = ticket.evidenceImage && ticket.evidenceImage.length > 0;
-  const hasLocation = ticket.location && ticket.location.latitude && ticket.location.longitude;
 
-  if (!hasImage && !hasLocation) return null;
+  if (!hasImage) return null;
 
   return (
     <View style={styles.card}>
-      <Text style={styles.cardSectionHeader}>Evidence & Location</Text>
+      <Text style={styles.cardSectionHeader}>Evidence</Text>
 
-      {hasImage && (
-        <View style={styles.section}>
-          <View style={styles.labelRow}>
-            <Ionicons name="image-outline" size={16} color={COLORS.primaryLight} />
-            <Text style={styles.label}>Evidence Photo</Text>
+      <View style={styles.section}>
+        <View style={styles.labelRow}>
+          <Ionicons name="image-outline" size={16} color={COLORS.primaryLight} />
+          <Text style={styles.label}>Evidence Photo</Text>
+        </View>
+        <Pressable onPress={() => setModalVisible(true)} style={styles.imageWrapper}>
+          <Image source={{ uri: ticket.evidenceImage }} style={styles.image} resizeMode="cover" />
+          <View style={styles.zoomPill}>
+            <Ionicons name="expand-outline" size={14} color={COLORS.white} />
+            <Text style={styles.zoomText}>Tap to expand</Text>
           </View>
-          <Pressable onPress={() => setModalVisible(true)} style={styles.imageWrapper}>
-            <Image source={{ uri: ticket.evidenceImage }} style={styles.image} resizeMode="cover" />
-            <View style={styles.zoomPill}>
-              <Ionicons name="expand-outline" size={14} color={COLORS.white} />
-              <Text style={styles.zoomText}>Tap to expand</Text>
-            </View>
+        </Pressable>
+
+        <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
+          <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+            <Image source={{ uri: ticket.evidenceImage }} style={styles.modalImage} resizeMode="contain" />
+            <TouchableOpacity style={styles.closeBtn} onPress={() => setModalVisible(false)}>
+              <Ionicons name="close" size={24} color={COLORS.white} />
+            </TouchableOpacity>
           </Pressable>
-
-          <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
-            <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-              <Image source={{ uri: ticket.evidenceImage }} style={styles.modalImage} resizeMode="contain" />
-              <TouchableOpacity style={styles.closeBtn} onPress={() => setModalVisible(false)}>
-                <Ionicons name="close" size={24} color={COLORS.white} />
-              </TouchableOpacity>
-            </Pressable>
-          </Modal>
-        </View>
-      )}
-
-      {hasLocation && (
-        <View style={styles.section}>
-          <View style={styles.labelRow}>
-            <Ionicons name="location-outline" size={16} color={COLORS.primaryLight} />
-            <Text style={styles.label}>Complaint Location</Text>
-          </View>
-          <View style={styles.locationBox}>
-            <Text style={styles.addressText}>{ticket.location.address || 'Address not available'}</Text>
-            <Text style={styles.coordsText}>
-              {ticket.location.latitude?.toFixed(6)}, {ticket.location.longitude?.toFixed(6)}
-            </Text>
-            <View style={styles.mapHint}>
-              <Ionicons name="map-outline" size={14} color={COLORS.textMuted} />
-              <Text style={styles.mapHintText}>Coordinates attached via map selection</Text>
-            </View>
-          </View>
-        </View>
-      )}
+        </Modal>
+      </View>
     </View>
   );
 };
@@ -94,11 +71,6 @@ const styles = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', alignItems: 'center', justifyContent: 'center', padding: SPACING.lg },
   modalImage: { width: '100%', height: '80%' },
   closeBtn: { position: 'absolute', top: 40, right: 20, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
-  locationBox: { backgroundColor: COLORS.surfaceElevated, borderRadius: RADIUS.md, padding: SPACING.md, borderWidth: 1, borderColor: COLORS.border },
-  addressText: { ...TYPOGRAPHY.bodyBold, color: COLORS.text, fontSize: 13 },
-  coordsText: { ...TYPOGRAPHY.small, color: COLORS.textMuted, marginTop: 4, fontSize: 11 },
-  mapHint: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: SPACING.sm },
-  mapHintText: { ...TYPOGRAPHY.small, color: COLORS.textMuted, fontSize: 11 },
 });
 
 export default TicketEvidence;
