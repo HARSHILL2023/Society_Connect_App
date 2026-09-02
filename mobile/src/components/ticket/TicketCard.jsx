@@ -73,23 +73,15 @@ export const TicketCard = ({
         {ticket.description}
       </Text>
 
-      {/* Evidence / Location indicators */}
-      {(ticket.evidenceImage || (ticket.location && ticket.location.latitude)) && (
+      {/* Evidence indicator */}
+      {ticket.evidenceImage ? (
         <View style={styles.evidenceRow}>
-          {ticket.evidenceImage ? (
-            <View style={styles.evidencePill}>
-              <Ionicons name="image-outline" size={12} color={COLORS.primaryLight} />
-              <Text style={styles.evidencePillText}>Photo</Text>
-            </View>
-          ) : null}
-          {ticket.location && ticket.location.latitude ? (
-            <View style={styles.evidencePill}>
-              <Ionicons name="location-outline" size={12} color={COLORS.primaryLight} />
-              <Text style={styles.evidencePillText}>Location</Text>
-            </View>
-          ) : null}
+          <View style={styles.evidencePill}>
+            <Ionicons name="image-outline" size={12} color={COLORS.primaryLight} />
+            <Text style={styles.evidencePillText}>Photo</Text>
+          </View>
         </View>
-      )}
+      ) : null}
 
       {/* Bottom Metadata row */}
       <View style={styles.footerRow}>
