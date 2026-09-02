@@ -7,10 +7,12 @@ const startServer = async () => {
   try {
     await connectDB();
 
-    const server = app.listen(PORT, () => {
+    // Bind to 0.0.0.0 so LAN devices (Expo Go) can reach the backend — not just localhost
+    const HOST = '0.0.0.0';
+    const server = app.listen(PORT, HOST, () => {
       console.log(`\n=================================================`);
       console.log(`  🏢 Society Connect Backend API Server`);
-      console.log(`  📡 Running at: http://localhost:${PORT}`);
+      console.log(`  📡 Running at: http://localhost:${PORT} and http://${HOST}:${PORT}`);
       console.log(`  🌍 Environment: ${NODE_ENV}`);
       console.log(`  🩺 Health check: http://localhost:${PORT}/api/health`);
       console.log(`=================================================\n`);
@@ -38,3 +40,4 @@ const startServer = async () => {
 };
 
 startServer();
+
