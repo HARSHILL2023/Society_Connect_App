@@ -7,15 +7,11 @@ export const COLORS = {
   border: '#273549',
   borderLight: '#374151',
 
-  // Primary Brand Colors
-  primary: '#4F46E5', // Modern Indigo
-  primaryLight: '#6366F1',
-  primaryDark: '#3730A3',
-  primaryGlow: 'rgba(99, 102, 241, 0.18)',
-
-  // Secondary Accents
-  accent: '#06B6D4', // Cyan
-  accentGlow: 'rgba(6, 182, 212, 0.15)',
+  // Primary Brand Colors - Emerald/Green (ONLY accent color)
+  primary: '#10B981',
+  primaryLight: '#34D399',
+  primaryDark: '#059669',
+  primaryGlow: 'rgba(16, 185, 129, 0.18)',
 
   // Semantic Status Colors
   pending: '#F59E0B',      // Amber
