@@ -48,18 +48,24 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const data = await authAPI.login(email, password);
-    await storage.setToken(data.token);
+    const tokenToStore = data.token || data.accessToken;
+    const refresh = data.refreshToken || null;
+    await storage.setToken(tokenToStore);
+    if (refresh) await storage.setRefreshToken(refresh);
     await storage.setUser(data.user);
-    setToken(data.token);
+    setToken(tokenToStore);
     setUser(data.user);
     return data.user;
   };
 
   const register = async (userData) => {
     const data = await authAPI.register(userData);
-    await storage.setToken(data.token);
+    const tokenToStore = data.token || data.accessToken;
+    const refresh = data.refreshToken || null;
+    await storage.setToken(tokenToStore);
+    if (refresh) await storage.setRefreshToken(refresh);
     await storage.setUser(data.user);
-    setToken(data.token);
+    setToken(tokenToStore);
     setUser(data.user);
     return data.user;
   };
