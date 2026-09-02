@@ -1,4 +1,4 @@
-# Society Connect — Smart Residential Community Management Mobile App
+   # Society Connect — Smart Residential Community Management Mobile App
 
 [![React Native](https://img.shields.io/badge/React_Native-Expo-6366F1?style=for-the-badge&logo=react)](https://reactnative.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
