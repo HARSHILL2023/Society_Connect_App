@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,21 +24,22 @@ export default function AdminDashboard() {
     try {
       const data = await adminAPI.getMetrics();
       setMetrics(data);
-    } catch (error) {
-      console.log('Error fetching admin metrics:', error);
+    } catch (e) {
+      console.log('Error loading metrics:', e);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { loadMetrics(); }, []);
-  useFocusEffect(useCallback(() => { loadMetrics(); }, []));
+  useFocusEffect(
+    React.useCallback(() => {
+      loadMetrics();
+    }, [])
+  );
 
   const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
 
-  const header = (
-    <Header title="Command Center" subtitle={user?.name || 'Administrator'} showDrawer onDrawerPress={openDrawer} />
-  );
+  const header = <Header title="Command Center" subtitle={user?.name || 'Administrator'} showDrawer onDrawerPress={openDrawer} />;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
