@@ -39,6 +39,11 @@ const ticketSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Ticket must be associated with a user'],
     },
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
     status: {
       type: String,
       enum: {
@@ -55,6 +60,18 @@ const ticketSchema = new mongoose.Schema(
     resolvedAt: {
       type: Date,
     },
+    // Evidence: base64/data-url or remote URL (optional, not huge storage)
+    evidenceImage: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    // Location where complaint issue is observed
+    location: {
+      latitude: { type: Number, default: null },
+      longitude: { type: Number, default: null },
+      address: { type: String, trim: true, default: '' },
+    },
   },
   {
     timestamps: true,
@@ -65,6 +82,7 @@ const ticketSchema = new mongoose.Schema(
 ticketSchema.index({ raisedBy: 1, status: 1 });
 ticketSchema.index({ status: 1 });
 ticketSchema.index({ createdAt: -1 });
+ticketSchema.index({ assignedTo: 1, status: 1 });
 
 // Transform output: format id, clean internals
 ticketSchema.set('toJSON', {
