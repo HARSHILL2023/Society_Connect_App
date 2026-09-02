@@ -7,8 +7,6 @@ import { router } from 'expo-router';
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../src/constants/theme';
 import * as ImageManipulator from 'expo-image-manipulator';
 
-// Camera route: app/camera/index.jsx -> /camera
-// Used for complaint evidence capture
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
@@ -32,7 +30,7 @@ export default function CameraScreen() {
       <SafeAreaView style={styles.permissionContainer}>
         <Ionicons name="camera-outline" size={56} color={COLORS.textMuted} />
         <Text style={styles.permissionTitle}>Camera Access Needed</Text>
-        <Text style={styles.permissionText}>Society Connect needs camera access to capture complaint evidence photos. This helps managers verify issues faster.</Text>
+        <Text style={styles.permissionText}>Society Connect needs camera to capture complaint photos.</Text>
         <TouchableOpacity style={styles.permissionButton} onPress={requestPermission} activeOpacity={0.85}>
           <Ionicons name="key-outline" size={18} color={COLORS.white} />
           <Text style={styles.permissionButtonText}>Grant Permission</Text>
@@ -40,33 +38,44 @@ export default function CameraScreen() {
         <TouchableOpacity style={styles.skipButton} onPress={() => router.back()}>
           <Text style={styles.skipText}>Go Back</Text>
         </TouchableOpacity>
-        {!permission.canAskAgain && <Text style={styles.permissionHint}>Permission permanently denied — enable camera in device Settings.</Text>}
       </SafeAreaView>
     );
   }
 
-  if (capturedUri) {
-    const handleUsePhoto = async () => {
-      try {
-        const manipulated = await ImageManipulator.manipulateAsync(
-          capturedUri,
-          [{ resize: { width: 800 } }],
-          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG, base64: true }
-        );
-        const dataUrl = `data:image/jpeg;base64,${manipulated.base64}`;
-        // Store in global for raise-complaint to pick up - use router params
-        // Since expo-router doesn't support callback via params, we use a simple global
-        global._cameraEvidence = { uri: manipulated.uri, base64: dataUrl };
-        router.back();
-        // Navigate with params so raise-complaint can pick it up
-        setTimeout(() => {
-          router.setParams({ evidenceImage: dataUrl, evidenceUri: manipulated.uri });
-        }, 100);
-      } catch (e) {
-        Alert.alert('Error', 'Failed to process image. Please retake.');
-      }
-    };
+  const handleCapture = async () => {
+    if (!cameraRef.current || capturing) return;
+    setCapturing(true);
+    try {
+      const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
+      setCapturedUri(photo.uri);
+    } catch (e) {
+      Alert.alert('Capture Failed', e.message || 'Could not capture image.');
+    } finally {
+      setCapturing(false);
+    }
+  };
 
+  const handleUsePhoto = async () => {
+    try {
+      const result = await ImageManipulator.manipulateAsync(
+        capturedUri,
+        [{ resize: { width: 800 } }],
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG, base64: true }
+      );
+      const dataUrl = `data:image/jpeg;base64,${result.base64}`;
+      global._cameraEvidence = { uri: result.uri, base64: dataUrl };
+      router.back();
+    } catch (e) {
+      Alert.alert('Error', 'Failed to process image.');
+    }
+  };
+
+  const toggleFacing = () => setFacing((f) => (f === 'back' ? 'front' : 'back'));
+  const toggleFlash = () => setFlash((f) => (f === 'off' ? 'on' : 'off'));
+  const zoomIn = () => setZoom((z) => Math.min(z + 0.1, 1));
+  const zoomOut = () => setZoom((z) => Math.max(z - 0.1, 0));
+
+  if (capturedUri) {
     return (
       <SafeAreaView style={styles.previewContainer}>
         <View style={styles.previewHeader}>
@@ -93,27 +102,9 @@ export default function CameraScreen() {
     );
   }
 
-  const handleCapture = async () => {
-    if (!cameraRef.current || capturing) return;
-    setCapturing(true);
-    try {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 0.8, skipProcessing: false });
-      setCapturedUri(photo.uri);
-    } catch (e) {
-      Alert.alert('Capture Failed', e.message || 'Could not capture image.');
-    } finally {
-      setCapturing(false);
-    }
-  };
-
-  const toggleFacing = () => setFacing((f) => (f === 'back' ? 'front' : 'back'));
-  const toggleFlash = () => setFlash((f) => (f === 'off' ? 'on' : 'off'));
-  const handleZoomIn = () => setZoom((z) => Math.min(z + 0.1, 1));
-  const handleZoomOut = () => setZoom((z) => Math.max(z - 0.1, 0));
-
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera} facing={facing} flash={flash} zoom={zoom} enableTorch={flash === 'on'} autofocus="on">
+      <CameraView ref={cameraRef} style={styles.camera} facing={facing} flash={flash} zoom={zoom} enableTorch={flash === 'on'}>
         <SafeAreaView edges={['top']} style={styles.topBar}>
           <TouchableOpacity style={styles.topBtn} onPress={() => router.back()}>
             <Ionicons name="close" size={22} color={COLORS.white} />
@@ -124,11 +115,11 @@ export default function CameraScreen() {
 
         <View style={styles.controlsRow}>
           <View style={styles.zoomGroup}>
-            <TouchableOpacity style={styles.zoomBtn} onPress={handleZoomOut}>
+            <TouchableOpacity style={styles.zoomBtn} onPress={zoomOut}>
               <Ionicons name="remove" size={16} color={COLORS.white} />
             </TouchableOpacity>
             <Text style={styles.zoomText}>{Math.round(zoom * 10) / 10}x</Text>
-            <TouchableOpacity style={styles.zoomBtn} onPress={handleZoomIn}>
+            <TouchableOpacity style={styles.zoomBtn} onPress={zoomIn}>
               <Ionicons name="add" size={16} color={COLORS.white} />
             </TouchableOpacity>
           </View>
@@ -164,7 +155,6 @@ const styles = StyleSheet.create({
   permissionContainer: { flex: 1, backgroundColor: COLORS.background, alignItems: 'center', justifyContent: 'center', padding: SPACING.xl },
   permissionTitle: { ...TYPOGRAPHY.h2, color: COLORS.text, marginTop: SPACING.md, textAlign: 'center' },
   permissionText: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, textAlign: 'center', marginTop: SPACING.sm, lineHeight: 18 },
-  permissionHint: { ...TYPOGRAPHY.small, color: COLORS.textMuted, textAlign: 'center', marginTop: SPACING.md },
   permissionButton: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, backgroundColor: COLORS.primary, paddingVertical: SPACING.md, paddingHorizontal: SPACING.xl, borderRadius: RADIUS.md, marginTop: SPACING.lg },
   permissionButtonText: { ...TYPOGRAPHY.bodyBold, color: COLORS.white },
   skipButton: { marginTop: SPACING.md, padding: SPACING.sm },
