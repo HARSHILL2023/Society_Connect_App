@@ -2,104 +2,95 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-// Keys
 const TOKEN_KEY = 'society_connect_token';
 const REFRESH_KEY = 'society_connect_refresh';
 const USER_KEY = '@society_connect_user';
 
-// Helper: SecureStore only works on native; web fallback to AsyncStorage
-const isNative = Platform.OS !== 'web';
+const isWeb = Platform.OS === 'web';
 
 export const storage = {
-  // Token - stored securely on device (expo-secure-store), fallback to AsyncStorage on web
   setToken: async (token) => {
+    if (!token) return;
     try {
-      if (isNative && token) {
-        await SecureStore.setItemAsync(TOKEN_KEY, token);
-        // Also migrate cleanup: remove old AsyncStorage token if exists
-        try { await AsyncStorage.removeItem('@society_connect_token'); } catch {}
-      } else if (token) {
+      if (isWeb) {
         await AsyncStorage.setItem('@society_connect_token', token);
+      } else {
+        await SecureStore.setItemAsync(TOKEN_KEY, token);
       }
     } catch (e) {
-      console.error('Error saving auth token:', e);
-      // Fallback to AsyncStorage
-      try { await AsyncStorage.setItem('@society_connect_token', token); } catch {}
+      console.error('Error saving token:', e);
     }
   },
 
   getToken: async () => {
     try {
-      if (isNative) {
-        const token = await SecureStore.getItemAsync(TOKEN_KEY);
-        if (token) return token;
-        // Migration: check old AsyncStorage key
-        const legacy = await AsyncStorage.getItem('@society_connect_token');
-        if (legacy) {
-          // Migrate to SecureStore
-          await SecureStore.setItemAsync(TOKEN_KEY, legacy);
-          await AsyncStorage.removeItem('@society_connect_token');
-          return legacy;
-        }
-        return null;
+      if (isWeb) {
+        return await AsyncStorage.getItem('@society_connect_token');
       }
-      return await AsyncStorage.getItem('@society_connect_token');
+      const token = await SecureStore.getItemAsync(TOKEN_KEY);
+      if (token) return token;
+
+      const oldToken = await AsyncStorage.getItem('@society_connect_token');
+      if (oldToken) {
+        await SecureStore.setItemAsync(TOKEN_KEY, oldToken);
+        await AsyncStorage.removeItem('@society_connect_token');
+        return oldToken;
+      }
+      return null;
     } catch (e) {
-      console.error('Error retrieving auth token:', e);
+      console.error('Error reading token:', e);
       return null;
     }
   },
 
   removeToken: async () => {
     try {
-      if (isNative) await SecureStore.deleteItemAsync(TOKEN_KEY);
+      if (!isWeb) await SecureStore.deleteItemAsync(TOKEN_KEY);
       await AsyncStorage.removeItem('@society_connect_token');
     } catch (e) {
-      console.error('Error removing auth token:', e);
+      console.error('Error removing token:', e);
     }
   },
 
   setRefreshToken: async (token) => {
+    if (!token) return;
     try {
-      if (!token) return;
-      if (isNative) {
-        await SecureStore.setItemAsync(REFRESH_KEY, token);
-        try { await AsyncStorage.removeItem('@society_connect_refresh'); } catch {}
-      } else {
+      if (isWeb) {
         await AsyncStorage.setItem('@society_connect_refresh', token);
+      } else {
+        await SecureStore.setItemAsync(REFRESH_KEY, token);
       }
     } catch (e) {
       console.error('Error saving refresh token:', e);
-      try { await AsyncStorage.setItem('@society_connect_refresh', token); } catch {}
     }
   },
 
   getRefreshToken: async () => {
     try {
-      if (isNative) {
-        const t = await SecureStore.getItemAsync(REFRESH_KEY);
-        if (t) return t;
-        const legacy = await AsyncStorage.getItem('@society_connect_refresh');
-        if (legacy) {
-          await SecureStore.setItemAsync(REFRESH_KEY, legacy);
-          await AsyncStorage.removeItem('@society_connect_refresh');
-          return legacy;
-        }
-        return null;
+      if (isWeb) {
+        return await AsyncStorage.getItem('@society_connect_refresh');
       }
-      return await AsyncStorage.getItem('@society_connect_refresh');
+      const token = await SecureStore.getItemAsync(REFRESH_KEY);
+      if (token) return token;
+
+      const oldToken = await AsyncStorage.getItem('@society_connect_refresh');
+      if (oldToken) {
+        await SecureStore.setItemAsync(REFRESH_KEY, oldToken);
+        await AsyncStorage.removeItem('@society_connect_refresh');
+        return oldToken;
+      }
+      return null;
     } catch (e) {
-      console.error('Error retrieving refresh token:', e);
+      console.error('Error reading refresh token:', e);
       return null;
     }
   },
 
-  // User - JSON, stored in AsyncStorage (not sensitive, but persisted)
   setUser: async (user) => {
     try {
       await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
     } catch (e) {
-      console.error('Error saving user data:', e);
+      console.error('Error saving user:', e);
     }
   },
 
@@ -108,7 +99,7 @@ export const storage = {
       const data = await AsyncStorage.getItem(USER_KEY);
       return data ? JSON.parse(data) : null;
     } catch (e) {
-      console.error('Error retrieving user data:', e);
+      console.error('Error reading user:', e);
       return null;
     }
   },
@@ -117,20 +108,19 @@ export const storage = {
     try {
       await AsyncStorage.removeItem(USER_KEY);
     } catch (e) {
-      console.error('Error removing user data:', e);
+      console.error('Error removing user:', e);
     }
   },
 
-  // Clear all auth state
   clearAuth: async () => {
     try {
-      if (isNative) {
-        try { await SecureStore.deleteItemAsync(TOKEN_KEY); } catch {}
-        try { await SecureStore.deleteItemAsync(REFRESH_KEY); } catch {}
+      if (!isWeb) {
+        await SecureStore.deleteItemAsync(TOKEN_KEY);
+        await SecureStore.deleteItemAsync(REFRESH_KEY);
       }
       await AsyncStorage.multiRemove(['@society_connect_token', '@society_connect_refresh', USER_KEY]);
     } catch (e) {
-      console.error('Error clearing auth storage:', e);
+      console.error('Error clearing auth:', e);
     }
   },
 };
