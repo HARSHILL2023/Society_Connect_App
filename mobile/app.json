@@ -17,7 +17,6 @@
       "bundleIdentifier": "com.societyconnect.app",
       "infoPlist": {
         "NSCameraUsageDescription": "Society Connect needs camera access to capture complaint evidence photos.",
-        "NSLocationWhenInUseUsageDescription": "Society Connect needs location access to attach complaint location.",
         "NSPhotoLibraryUsageDescription": "Society Connect needs photo library access to attach complaint evidence from gallery."
       }
     },
@@ -29,9 +28,7 @@
       "package": "com.societyconnect.app",
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION"
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -56,14 +53,6 @@
         "expo-image-picker",
         {
           "photosPermission": "Society Connect needs photo library access to attach evidence images."
-        }
-      ],
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Society Connect needs location to attach complaint location.",
-          "isIosBackgroundLocationEnabled": false,
-          "isAndroidBackgroundLocationEnabled": false
         }
       ],
       "expo-router"
