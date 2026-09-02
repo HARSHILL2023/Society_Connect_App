@@ -11,10 +11,21 @@ export const Header = ({
   onRightPress,
   showBack,
   onBackPress,
+  showDrawer,
+  onDrawerPress,
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftRow}>
+        {showDrawer && (
+          <TouchableOpacity
+            style={styles.drawerButton}
+            onPress={onDrawerPress}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="menu-outline" size={24} color={COLORS.text} />
+          </TouchableOpacity>
+        )}
         {showBack && (
           <TouchableOpacity
             style={styles.backButton}
@@ -65,6 +76,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+  },
+  drawerButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   backButton: {
     width: 40,

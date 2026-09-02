@@ -9,11 +9,11 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import { Audio } from 'expo-av';
+import { useAudioPlayer } from 'expo-audio';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
 
-const successSound = require('../../assets/sounds/success.wav');
+const successSound = require('../../../assets/sounds/success.wav');
 
 export const SuccessModal = ({
   visible,
@@ -22,14 +22,22 @@ export const SuccessModal = ({
   message = 'Your complaint has been submitted successfully.',
   onViewTickets,
   onDone,
+  // Compatibility aliases for earlier usage in CreateTicketScreen
+  onPrimaryPress,
+  onSecondaryPress,
+  primaryButtonText = 'View My Tickets',
+  secondaryButtonText = 'Done',
 }) => {
+  // Resolve aliases
+  const handlePrimary = onViewTickets || onPrimaryPress;
+  const handleSecondary = onDone || onSecondaryPress;
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
   const checkmarkScaleAnim = React.useRef(new Animated.Value(0)).current;
   const checkmarkDrawAnim = React.useRef(new Animated.Value(0)).current;
   const glowAnim = React.useRef(new Animated.Value(0)).current;
 
-  const soundRef = React.useRef(null);
+  const player = useAudioPlayer(successSound);
   const animationStarted = React.useRef(false);
 
   React.useEffect(() => {
@@ -107,46 +115,25 @@ export const SuccessModal = ({
     }, 50);
   };
 
-  const playSuccessSound = async () => {
+  const playSuccessSound = () => {
     try {
-      const { sound } = await Audio.Sound.createAsync(successSound, {
-        shouldPlay: false,
-        volume: 0.6,
-      });
-      soundRef.current = sound;
-      await sound.playAsync();
-      
-      // Unload after playback to free resources
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.didJustFinish && !status.isPlaying) {
-          sound.unloadAsync();
-          soundRef.current = null;
-        }
-      });
+      player.seekTo(0);
+      player.volume = 0.6;
+      player.play();
     } catch (error) {
       console.warn('Failed to play success sound:', error);
     }
   };
 
-  // Cleanup sound on unmount
-  React.useEffect(() => {
-    return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync().catch(() => {});
-        soundRef.current = null;
-      }
-    };
-  }, []);
-
   if (!visible) return null;
 
   const handleDonePress = () => {
-    onDone?.();
+    handleSecondary?.();
     onClose();
   };
 
   const handleViewTicketsPress = () => {
-    onViewTickets?.();
+    handlePrimary?.();
     onClose();
   };
 
@@ -207,7 +194,6 @@ export const SuccessModal = ({
                             { rotate: '-45deg' },
                             { scaleX: checkmarkDrawAnim },
                           ],
-                          transformOrigin: '0 0',
                         },
                       ]}
                     />
@@ -219,7 +205,6 @@ export const SuccessModal = ({
                             { rotate: '45deg' },
                             { scaleX: checkmarkDrawAnim },
                           ],
-                          transformOrigin: '100% 0',
                         },
                       ]}
                     />
@@ -239,7 +224,7 @@ export const SuccessModal = ({
                 accessibilityLabel={title}
               >
                 <Text style={styles.primaryButtonText}>
-                  View My Tickets
+                  {primaryButtonText}
                 </Text>
                 <Ionicons
                   name="chevron-forward-outline"
@@ -257,7 +242,7 @@ export const SuccessModal = ({
                 accessibilityRole="button"
                 accessibilityLabel="Done"
               >
-                <Text style={styles.secondaryButtonText}>Done</Text>
+                <Text style={styles.secondaryButtonText}>{secondaryButtonText}</Text>
               </TouchableOpacity>
             </Animated.View>
           </TouchableWithoutFeedback>
