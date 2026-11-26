@@ -1,8 +1,8 @@
+import { useOpenDrawer } from '../../../src/utils/navigation';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { ticketAPI } from '../../../src/services/api';
 import { COLORS, SPACING } from '../../../src/constants/theme';
 import Header from '../../../src/components/common/Header';
@@ -14,7 +14,6 @@ import EmptyState from '../../../src/components/common/EmptyState';
 import LoadingScreen from '../../../src/components/common/LoadingScreen';
 
 export default function AdminTickets() {
-  const navigation = useNavigation();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -43,7 +42,7 @@ export default function AdminTickets() {
   useFocusEffect(useCallback(() => { loadTickets(); }, [statusFilter, categoryFilter, searchQuery]));
 
   const onRefresh = useCallback(() => { setRefreshing(true); loadTickets(); }, [statusFilter, categoryFilter, searchQuery]);
-  const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
+  const openDrawer = useOpenDrawer();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>

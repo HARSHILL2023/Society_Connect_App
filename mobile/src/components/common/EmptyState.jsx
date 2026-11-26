@@ -20,31 +20,28 @@ export const EmptyState = ({
           iconName: 'checkmark-circle-outline',
           iconColor: COLORS.resolved,
           bgColor: COLORS.resolvedBg,
-          borderColor: 'rgba(16, 185, 129, 0.3)',
         };
       case 'action':
         return {
           iconName: 'add-circle-outline',
-          iconColor: COLORS.primary,
-          bgColor: COLORS.primaryGlow,
-          borderColor: 'rgba(16, 185, 129, 0.3)',
+          iconColor: COLORS.text,
+          bgColor: COLORS.surface,
         };
       default:
         return {
           iconName: icon,
           iconColor: COLORS.textMuted,
-          bgColor: COLORS.surface,
-          borderColor: COLORS.border,
+          bgColor: COLORS.surfaceElevated,
         };
     }
   };
 
-  const { iconName, iconColor, bgColor, borderColor } = getIconConfig();
+  const { iconName, iconColor, bgColor } = getIconConfig();
 
   return (
     <View style={[styles.container, style]}>
-      <View style={[styles.iconCircle, { backgroundColor: bgColor, borderColor }]}>
-        <Ionicons name={iconName} size={36} color={iconColor} />
+      <View style={[styles.iconCircle, { backgroundColor: bgColor }]}>
+        <Ionicons name={iconName} size={30} color={iconColor} />
       </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
@@ -54,7 +51,7 @@ export const EmptyState = ({
           title={actionTitle}
           onPress={onActionPress}
           size="md"
-          variant={variant === 'action' ? 'primary' : 'outline'}
+          variant={variant === 'action' ? 'primary' : 'secondary'}
           style={styles.button}
         />
       )}
@@ -66,36 +63,30 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: SPACING.xxxl,
-    marginVertical: SPACING.lg,
+    paddingVertical: SPACING.xxxl,
+    paddingHorizontal: SPACING.xl,
   },
   iconCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    borderWidth: 1,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.lg,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
   },
   title: {
     ...TYPOGRAPHY.h3,
     color: COLORS.text,
     textAlign: 'center',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   description: {
-    ...TYPOGRAPHY.body,
-    color: COLORS.textSecondary,
+    ...TYPOGRAPHY.caption,
+    color: COLORS.textMuted,
     textAlign: 'center',
-    lineHeight: 22,
-    maxWidth: 300,
-    marginBottom: SPACING.lg,
+    lineHeight: 20,
+    maxWidth: 290,
+    marginBottom: SPACING.xl,
   },
   button: {
     minWidth: 180,

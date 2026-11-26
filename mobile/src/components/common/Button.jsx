@@ -22,7 +22,7 @@ export const Button = ({
   textStyle,
 }) => {
   const getBackgroundColor = () => {
-    if (disabled) return COLORS.surfaceLight;
+    if (disabled) return COLORS.surfaceMuted;
     switch (variant) {
       case 'primary':
         return COLORS.primary;
@@ -43,22 +43,15 @@ export const Button = ({
     switch (variant) {
       case 'primary':
       case 'danger':
-      case 'secondary':
         return COLORS.white;
+      case 'secondary':
       case 'outline':
-        return COLORS.primaryLight;
+        return COLORS.text;
       case 'ghost':
         return COLORS.textSecondary;
       default:
         return COLORS.white;
     }
-  };
-
-  const getBorderColor = () => {
-    if (disabled) return COLORS.border;
-    if (variant === 'outline') return COLORS.primary;
-    if (variant === 'secondary') return COLORS.border;
-    return COLORS.transparent;
   };
 
   const getHeight = () => {
@@ -79,7 +72,7 @@ export const Button = ({
       case 'lg':
         return 16;
       default:
-        return 14;
+        return 14.5;
     }
   };
 
@@ -87,13 +80,11 @@ export const Button = ({
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.8}
+      activeOpacity={0.85}
       style={[
         styles.button,
         {
           backgroundColor: getBackgroundColor(),
-          borderColor: getBorderColor(),
-          borderWidth: variant === 'outline' || variant === 'secondary' ? 1 : 0,
           height: getHeight(),
         },
         style,
@@ -102,7 +93,7 @@ export const Button = ({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'outline' ? COLORS.primary : COLORS.white}
+          color={variant === 'primary' || variant === 'danger' ? COLORS.white : COLORS.text}
         />
       ) : (
         <View style={styles.contentRow}>
@@ -155,7 +146,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: '600',
-    letterSpacing: 0.2,
+    letterSpacing: 0.1,
   },
   leftIcon: {
     marginRight: SPACING.sm,

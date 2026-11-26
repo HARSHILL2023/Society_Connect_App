@@ -6,37 +6,25 @@ import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from '../../constants/theme';
 export const ErrorBanner = ({ message, onDismiss, variant = 'error' }) => {
   const getColors = () => {
     if (variant === 'warning') {
-      return {
-        bg: COLORS.pendingBg,
-        border: 'rgba(245, 158, 11, 0.3)',
-        icon: COLORS.pending,
-      };
+      return { bg: COLORS.pendingBg, icon: COLORS.pending };
     }
     if (variant === 'info') {
-      return {
-        bg: COLORS.primaryGlow,
-        border: 'rgba(16, 185, 129, 0.3)',
-        icon: COLORS.primary,
-      };
+      return { bg: COLORS.surfaceElevated, icon: COLORS.text };
     }
-    return {
-      bg: COLORS.dangerBg,
-      border: 'rgba(239, 68, 68, 0.3)',
-      icon: COLORS.danger,
-    };
+    return { bg: COLORS.dangerBg, icon: COLORS.danger };
   };
 
-  const { bg, border, icon } = getColors();
+  const { bg, icon } = getColors();
 
   if (!message) return null;
 
   return (
-    <View style={[styles.container, { backgroundColor: bg, borderColor: border }]}>
+    <View style={[styles.container, { backgroundColor: bg }]}>
       <Ionicons name="alert-circle-outline" size={18} color={icon} />
       <Text style={[styles.text, { color: icon }]}>{message}</Text>
       {onDismiss && (
         <TouchableOpacity onPress={onDismiss} style={styles.closeButton}>
-          <Ionicons name="close" size={18} color={icon} />
+          <Ionicons name="close" size={16} color={icon} />
         </TouchableOpacity>
       )}
     </View>
@@ -47,7 +35,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
     marginBottom: SPACING.md,
@@ -61,7 +48,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 2,
-    marginLeft: SPACING.sm,
+    marginLeft: SPACING.xs,
   },
 });
 

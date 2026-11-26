@@ -1,8 +1,8 @@
+import { useOpenDrawer } from '../../../src/utils/navigation';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { userAPI, getErrorMessage } from '../../../src/services/api';
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../../src/constants/theme';
 import Header from '../../../src/components/common/Header';
@@ -13,7 +13,6 @@ import LoadingScreen from '../../../src/components/common/LoadingScreen';
 import ModalDialog from '../../../src/components/common/ModalDialog';
 
 export default function AdminUsers() {
-  const navigation = useNavigation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -58,7 +57,7 @@ export default function AdminUsers() {
     }
   };
 
-  const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
+  const openDrawer = useOpenDrawer();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -101,9 +100,9 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
   searchContainer: { paddingHorizontal: SPACING.lg, marginTop: SPACING.xs },
   searchInput: { marginBottom: SPACING.xs },
-  roleTabsRow: { flexDirection: 'row', paddingHorizontal: SPACING.lg, gap: SPACING.xs, marginBottom: SPACING.md },
-  roleTab: { flex: 1, paddingVertical: 7, alignItems: 'center', justifyContent: 'center', borderRadius: RADIUS.md, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
-  selectedRoleTab: { backgroundColor: COLORS.primary, borderColor: COLORS.primaryLight },
+  roleTabsRow: { flexDirection: 'row', paddingHorizontal: SPACING.lg, gap: SPACING.sm, marginBottom: SPACING.md },
+  roleTab: { flex: 1, paddingVertical: 9, alignItems: 'center', justifyContent: 'center', borderRadius: RADIUS.md, backgroundColor: COLORS.surface },
+  selectedRoleTab: { backgroundColor: COLORS.primary },
   roleTabText: { ...TYPOGRAPHY.small, color: COLORS.textSecondary, fontWeight: '600' },
   selectedRoleTabText: { color: COLORS.white },
   listContent: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.xxxl },

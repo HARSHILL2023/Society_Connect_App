@@ -21,6 +21,10 @@ const getBaseUrl = () => {
     return process.env.EXPO_PUBLIC_API_URL;
   }
 
+  // Fallback to app.json extra.apiUrl (useful when .env not reloaded)
+  const extraUrl = Constants.expoConfig?.extra?.apiUrl || Constants.manifest?.extra?.apiUrl;
+  if (extraUrl) return extraUrl;
+
   const expoIp = getExpoHostIp();
   if (expoIp) return `http://${expoIp}:5000/api`;
 
@@ -37,7 +41,7 @@ if (__DEV__) {
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 12000,
+  timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -69,12 +73,21 @@ api.interceptors.response.use(
   }
 );
 
-// Simple error message for UI
+// Simple error message for UI - handles all network failure variants for demo
 export const getErrorMessage = (error) => {
   if (error.response?.data?.message) return error.response.data.message;
   if (error.response?.data?.errors?.[0]) return error.response.data.errors[0];
-  if (error.message === 'Network Error') {
-    return `Network Error: cannot reach backend at ${API_BASE_URL}. Check Wi-Fi and backend.`;
+  // axios network errors have no response - detect via code or message
+  const isNetworkError =
+    !error.response &&
+    (error.code === 'ERR_NETWORK' ||
+      error.code === 'ECONNABORTED' ||
+      error.message === 'Network Error' ||
+      error.message?.includes('timeout') ||
+      error.message?.includes('Network Error') ||
+      error.message?.includes('Cannot reach'));
+  if (isNetworkError) {
+    return `Network Error: cannot reach backend at ${API_BASE_URL}. Ensure phone & laptop are on same Wi-Fi (192.168.1.x), backend is running (npm run dev), and firewall allows port 5000.`;
   }
   if (error.message) return error.message;
   return 'Something went wrong. Please try again.';

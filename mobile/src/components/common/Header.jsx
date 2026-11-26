@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, TYPOGRAPHY, RADIUS } from '../../constants/theme';
 
 export const Header = ({
   title,
@@ -19,20 +19,20 @@ export const Header = ({
       <View style={styles.leftRow}>
         {showDrawer && (
           <TouchableOpacity
-            style={styles.drawerButton}
+            style={styles.iconButton}
             onPress={onDrawerPress}
             activeOpacity={0.7}
           >
-            <Ionicons name="menu-outline" size={24} color={COLORS.text} />
+            <Ionicons name="menu-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
         )}
         {showBack && (
           <TouchableOpacity
-            style={styles.backButton}
+            style={styles.iconButton}
             onPress={onBackPress}
             activeOpacity={0.7}
           >
-            <Ionicons name="chevron-back" size={24} color={COLORS.text} />
+            <Ionicons name="chevron-back" size={22} color={COLORS.text} />
           </TouchableOpacity>
         )}
         <View style={styles.textContainer}>
@@ -51,11 +51,11 @@ export const Header = ({
         rightAction
       ) : rightIcon && onRightPress ? (
         <TouchableOpacity
-          style={styles.actionButton}
+          style={styles.iconButton}
           onPress={onRightPress}
           activeOpacity={0.7}
         >
-          <Ionicons name={rightIcon} size={22} color={COLORS.text} />
+          <Ionicons name={rightIcon} size={21} color={COLORS.text} />
         </TouchableOpacity>
       ) : null}
     </View>
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.md,
+    paddingTop: SPACING.sm,
     paddingBottom: SPACING.md,
     backgroundColor: COLORS.background,
   },
@@ -77,27 +77,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  drawerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  iconButton: {
+    width: 42,
+    height: 42,
+    borderRadius: RADIUS.sm,
     backgroundColor: COLORS.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   textContainer: {
     flex: 1,
@@ -108,18 +95,8 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     marginTop: 2,
-  },
-  actionButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
 });
 

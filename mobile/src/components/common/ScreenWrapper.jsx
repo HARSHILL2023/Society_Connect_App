@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  View,
   StyleSheet,
   ScrollView,
   SafeAreaView,
@@ -28,6 +27,7 @@ export const ScreenWrapper = ({
       ]}
       keyboardShouldPersistTaps={keyboardShouldPersistTaps}
       scrollEnabled={scrollEnabled}
+      showsVerticalScrollIndicator={false}
     >
       {children}
     </ScrollView>

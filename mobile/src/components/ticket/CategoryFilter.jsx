@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY, CATEGORIES } from '../../constants/theme';
 
 export const CategoryFilter = ({
@@ -21,7 +21,7 @@ export const CategoryFilter = ({
           <TouchableOpacity
             key={category}
             onPress={() => onSelectCategory(category)}
-            activeOpacity={0.75}
+            activeOpacity={0.8}
             style={[
               styles.chip,
               isSelected && styles.selectedChip,
@@ -49,24 +49,22 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   chip: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: RADIUS.md,
-    backgroundColor: COLORS.surfaceElevated,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.surface,
   },
   selectedChip: {
-    backgroundColor: 'rgba(99, 102, 241, 0.2)',
-    borderColor: COLORS.primaryLight,
+    backgroundColor: COLORS.primary,
   },
   chipText: {
     ...TYPOGRAPHY.small,
     color: COLORS.textSecondary,
     fontWeight: '500',
+    fontSize: 12,
   },
   selectedChipText: {
-    color: COLORS.primaryLight,
+    color: COLORS.white,
     fontWeight: '600',
   },
 });

@@ -22,7 +22,7 @@ export const StatusFilter = ({
           <TouchableOpacity
             key={status}
             onPress={() => onSelectStatus(status)}
-            activeOpacity={0.75}
+            activeOpacity={0.8}
             style={[
               styles.tab,
               isSelected && styles.selectedTab,
@@ -69,20 +69,18 @@ const styles = StyleSheet.create({
   tab: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 7,
-    paddingHorizontal: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   selectedTab: {
     backgroundColor: COLORS.primary,
-    borderColor: COLORS.primaryLight,
   },
   tabText: {
     ...TYPOGRAPHY.captionBold,
     color: COLORS.textSecondary,
+    fontSize: 12.5,
   },
   selectedTabText: {
     color: COLORS.white,
@@ -95,11 +93,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surfaceElevated,
   },
   selectedCountBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: 'rgba(255, 255, 255, 0.22)',
   },
   countText: {
     ...TYPOGRAPHY.small,
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     fontSize: 10,
   },
   selectedCountText: {

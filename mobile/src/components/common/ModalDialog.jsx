@@ -4,10 +4,9 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../constants/theme';
 import Button from './Button';
 
 export const ModalDialog = ({
@@ -71,7 +70,7 @@ export const ModalDialog = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: COLORS.overlay,
     justifyContent: 'center',
     alignItems: 'center',
     padding: SPACING.lg,
@@ -79,16 +78,10 @@ const styles = StyleSheet.create({
   dialog: {
     width: '100%',
     maxWidth: 380,
-    backgroundColor: COLORS.surfaceElevated,
-    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.xxl,
     padding: SPACING.xl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 10,
+    ...SHADOWS.floating,
   },
   title: {
     ...TYPOGRAPHY.h2,
@@ -99,7 +92,7 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.body,
     color: COLORS.textSecondary,
     marginBottom: SPACING.lg,
-    lineHeight: 22,
+    lineHeight: 21,
   },
   buttonRow: {
     flexDirection: 'row',

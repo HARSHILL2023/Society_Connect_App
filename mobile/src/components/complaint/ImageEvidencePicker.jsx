@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Image,
   ActivityIndicator,
   Alert,
@@ -14,15 +13,13 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
 
-// Beginner-friendly evidence picker: gallery + camera navigation
-// Props: evidenceUri (display), evidenceImage (base64), onChange, onOpenCamera
+// Evidence picker: camera + gallery, compressed before upload
 export const ImageEvidencePicker = ({ evidenceUri, evidenceImage, onChange, onOpenCamera, editable = true }) => {
   const [loading, setLoading] = useState(false);
 
   const processImage = async (uri) => {
     try {
       setLoading(true);
-      // Validate: ensure uri exists
       if (!uri) throw new Error('No image selected');
 
       // Compress & resize: reduce upload size for MongoDB (max width 800, quality 0.7)
@@ -32,10 +29,8 @@ export const ImageEvidencePicker = ({ evidenceUri, evidenceImage, onChange, onOp
         { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG, base64: true }
       );
 
-      // Build data URL for backend + display
       const dataUrl = `data:image/jpeg;base64,${manipulated.base64}`;
 
-      // Extra validation: ensure not too large (~2MB)
       if (dataUrl.length > 2_500_000) {
         Alert.alert('Image Too Large', 'Please select a smaller image or crop it.');
         return;
@@ -92,13 +87,13 @@ export const ImageEvidencePicker = ({ evidenceUri, evidenceImage, onChange, onOp
                 <Text style={styles.secondaryText}>Retake</Text>
               </Pressable>
               <Pressable style={styles.removeBtn} onPress={handleRemove}>
-                <Ionicons name="trash-outline" size={16} color={COLORS.white} />
+                <Ionicons name="trash-outline" size={16} color={COLORS.danger} />
                 <Text style={styles.removeText}>Remove</Text>
               </Pressable>
             </View>
           )}
         </View>
-        <Text style={styles.hint}>Attached — will be sent with complaint</Text>
+        <Text style={styles.hint}>Attached and will be sent with the complaint</Text>
       </View>
     );
   }
@@ -109,7 +104,7 @@ export const ImageEvidencePicker = ({ evidenceUri, evidenceImage, onChange, onOp
 
       {loading ? (
         <View style={styles.loadingCard}>
-          <ActivityIndicator color={COLORS.primary} />
+          <ActivityIndicator color={COLORS.text} size="small" />
           <Text style={styles.loadingText}>Processing image...</Text>
         </View>
       ) : (
@@ -118,7 +113,7 @@ export const ImageEvidencePicker = ({ evidenceUri, evidenceImage, onChange, onOp
             style={({ pressed }) => [styles.pickBtn, pressed && { opacity: 0.85 }]}
             onPress={onOpenCamera}
           >
-            <Ionicons name="camera" size={20} color={COLORS.white} />
+            <Ionicons name="camera" size={18} color={COLORS.white} />
             <Text style={styles.pickText}>Take Photo</Text>
           </Pressable>
 
@@ -126,20 +121,25 @@ export const ImageEvidencePicker = ({ evidenceUri, evidenceImage, onChange, onOp
             style={({ pressed }) => [styles.pickBtnSecondary, pressed && { opacity: 0.85 }]}
             onPress={handlePickGallery}
           >
-            <Ionicons name="images-outline" size={20} color={COLORS.primaryLight} />
+            <Ionicons name="images-outline" size={18} color={COLORS.text} />
             <Text style={styles.pickSecondaryText}>Gallery</Text>
           </Pressable>
         </View>
       )}
 
-      <Text style={styles.hint}>Add photo evidence — validated, compressed to ~800px, JPEG</Text>
+      <Text style={styles.hint}>Photos are compressed to 800px JPEG before upload</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { marginBottom: SPACING.md + 2 },
-  label: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 11, marginBottom: SPACING.xs + 2 },
+  container: { marginBottom: SPACING.md },
+  label: {
+    ...TYPOGRAPHY.captionBold,
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    marginBottom: 6,
+  },
   buttonsRow: { flexDirection: 'row', gap: SPACING.sm },
   pickBtn: {
     flex: 1,
@@ -148,12 +148,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: SPACING.sm,
     backgroundColor: COLORS.primary,
-    paddingVertical: 12,
+    paddingVertical: 13,
     borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.primaryLight,
   },
-  pickText: { ...TYPOGRAPHY.captionBold, color: COLORS.white },
+  pickText: { ...TYPOGRAPHY.captionBold, color: COLORS.white, fontSize: 13 },
   pickBtnSecondary: {
     flex: 1,
     flexDirection: 'row',
@@ -161,12 +159,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: SPACING.sm,
     backgroundColor: COLORS.surfaceElevated,
-    paddingVertical: 12,
+    paddingVertical: 13,
     borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
-  pickSecondaryText: { ...TYPOGRAPHY.captionBold, color: COLORS.text },
+  pickSecondaryText: { ...TYPOGRAPHY.captionBold, color: COLORS.text, fontSize: 13 },
   loadingCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -174,16 +170,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surfaceElevated,
     padding: SPACING.md,
     borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   loadingText: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary },
   previewCard: {
     backgroundColor: COLORS.surfaceElevated,
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   previewImage: { width: '100%', height: 200 },
   previewActions: { flexDirection: 'row', gap: SPACING.sm, padding: SPACING.sm },
@@ -195,23 +187,21 @@ const styles = StyleSheet.create({
     gap: 6,
     backgroundColor: COLORS.surface,
     paddingVertical: 10,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderRadius: RADIUS.sm,
   },
-  secondaryText: { ...TYPOGRAPHY.captionBold, color: COLORS.text },
+  secondaryText: { ...TYPOGRAPHY.small, color: COLORS.text, fontWeight: '600' },
   removeBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: COLORS.danger,
+    backgroundColor: COLORS.dangerBg,
     paddingVertical: 10,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.sm,
   },
-  removeText: { ...TYPOGRAPHY.captionBold, color: COLORS.white },
-  hint: { ...TYPOGRAPHY.small, color: COLORS.textMuted, marginTop: 6, fontSize: 11 },
+  removeText: { ...TYPOGRAPHY.small, color: COLORS.danger, fontWeight: '600' },
+  hint: { ...TYPOGRAPHY.small, color: COLORS.textMuted, marginTop: 7, fontSize: 10.5 },
 });
 
 export default ImageEvidencePicker;

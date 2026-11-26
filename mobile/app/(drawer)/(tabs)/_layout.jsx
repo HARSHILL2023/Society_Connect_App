@@ -2,7 +2,7 @@ import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../../src/context/AuthContext';
-import { COLORS } from '../../../src/constants/theme';
+import { COLORS, SHADOWS } from '../../../src/constants/theme';
 import LoadingScreen from '../../../src/components/common/LoadingScreen';
 
 // Tabs layout for Member role
@@ -33,13 +33,13 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: COLORS.surface,
-          borderTopColor: COLORS.border,
-          borderTopWidth: 1,
-          height: 62,
-          paddingTop: 6,
-          paddingBottom: 8,
+          borderTopWidth: 0,
+          height: 66,
+          paddingTop: 8,
+          paddingBottom: 10,
+          ...SHADOWS.bar,
         },
-        tabBarActiveTintColor: COLORS.primary,
+        tabBarActiveTintColor: COLORS.text,
         tabBarInactiveTintColor: COLORS.textMuted,
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       }}

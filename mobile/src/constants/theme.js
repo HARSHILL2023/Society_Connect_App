@@ -1,44 +1,88 @@
+// Design tokens — "White Smoke & Charcoal"
+// Light, calm, borderless. Depth comes from soft shadows and filled surfaces.
+
 export const COLORS = {
-  // Backgrounds
-  background: '#090D16',
-  surface: '#111827',
-  surfaceLight: '#1F2937',
-  surfaceElevated: '#1E293B',
-  border: '#273549',
-  borderLight: '#374151',
+  // Canvas & surfaces
+  background: '#F4F4F5', // white smoke
+  surface: '#FFFFFF',
+  surfaceLight: '#FAFAFA',
+  surfaceElevated: '#EFEFF1', // filled tiles, inputs, chips
+  surfaceMuted: '#E8E8EB',
+  hairline: '#ECECEF',
 
-  // Primary Brand Colors - Emerald/Green (ONLY accent color)
-  primary: '#10B981',
-  primaryLight: '#34D399',
-  primaryDark: '#059669',
-  primaryGlow: 'rgba(16, 185, 129, 0.18)',
+  // Borders are intentionally gone — kept as transparent tokens so any
+  // legacy `borderWidth: 1` renders nothing.
+  border: 'transparent',
+  borderLight: 'transparent',
 
-  // Semantic Status Colors
-  pending: '#F59E0B',      // Amber
-  pendingBg: 'rgba(245, 158, 11, 0.12)',
-  inProgress: '#3B82F6',   // Blue
-  inProgressBg: 'rgba(59, 130, 246, 0.12)',
-  resolved: '#10B981',     // Emerald
-  resolvedBg: 'rgba(16, 185, 129, 0.12)',
-  danger: '#EF4444',       // Red
-  dangerBg: 'rgba(239, 68, 68, 0.12)',
+  // Brand — charcoal black
+  primary: '#1C1C1E',
+  primaryLight: '#2C2C2F',
+  primaryDark: '#000000',
+  primaryGlow: 'rgba(28, 28, 30, 0.06)',
+  primarySoft: '#E8E8EA',
 
-  // Priority Colors
-  priorityLow: '#10B981',
-  priorityMedium: '#F59E0B',
-  priorityHigh: '#F97316',
-  priorityUrgent: '#EF4444',
+  // Status — muted, readable on white smoke
+  pending: '#B45309',
+  pendingBg: '#FBF1E3',
+  inProgress: '#1D4ED8',
+  inProgressBg: '#E9EFFC',
+  resolved: '#15803D',
+  resolvedBg: '#E8F3EC',
+  danger: '#B91C1C',
+  dangerBg: '#FBEAEA',
+  dangerSoft: '#F6D9D9',
+
+  // Priority
+  priorityLow: '#15803D',
+  priorityMedium: '#B45309',
+  priorityHigh: '#C2410C',
+  priorityUrgent: '#B91C1C',
 
   // Text
-  text: '#F8FAFC',
-  textSecondary: '#94A3B8',
-  textMuted: '#64748B',
-  textDisabled: '#475569',
+  text: '#18181B',
+  textSecondary: '#5A5A62',
+  textMuted: '#8A8A94',
+  textDisabled: '#B4B4BC',
 
   // System
   white: '#FFFFFF',
   black: '#000000',
   transparent: 'transparent',
+  overlay: 'rgba(24, 24, 27, 0.35)',
+  overlayStrong: 'rgba(24, 24, 27, 0.55)',
+};
+
+// Soft elevation, no borders.
+export const SHADOWS = {
+  card: {
+    shadowColor: '#18181B',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    elevation: 2,
+  },
+  subtle: {
+    shadowColor: '#18181B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  floating: {
+    shadowColor: '#18181B',
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.16,
+    shadowRadius: 32,
+    elevation: 12,
+  },
+  bar: {
+    shadowColor: '#18181B',
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    elevation: 10,
+  },
 };
 
 export const SPACING = {
@@ -52,28 +96,30 @@ export const SPACING = {
 };
 
 export const RADIUS = {
-  xs: 6,
-  sm: 10,
+  xs: 8,
+  sm: 12,
   md: 14,
   lg: 18,
-  xl: 24,
+  xl: 22,
+  xxl: 28,
   full: 9999,
 };
 
 export const TYPOGRAPHY = {
   h1: {
-    fontSize: 26,
+    fontSize: 27,
     fontWeight: '700',
-    letterSpacing: -0.5,
+    letterSpacing: -0.7,
   },
   h2: {
     fontSize: 20,
     fontWeight: '700',
-    letterSpacing: -0.3,
+    letterSpacing: -0.4,
   },
   h3: {
-    fontSize: 17,
+    fontSize: 16.5,
     fontWeight: '600',
+    letterSpacing: -0.2,
   },
   body: {
     fontSize: 15,

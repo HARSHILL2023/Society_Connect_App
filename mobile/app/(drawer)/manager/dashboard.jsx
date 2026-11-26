@@ -1,12 +1,12 @@
+import { useOpenDrawer } from '../../../src/utils/navigation';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../src/context/AuthContext';
 import { ticketAPI } from '../../../src/services/api';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../../src/constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../../src/constants/theme';
 import Header from '../../../src/components/common/Header';
 import StatCard from '../../../src/components/common/StatCard';
 import TicketCard from '../../../src/components/ticket/TicketCard';
@@ -16,7 +16,6 @@ import ScreenWrapper from '../../../src/components/common/ScreenWrapper';
 
 export default function ManagerDashboard() {
   const { user } = useAuth();
-  const navigation = useNavigation();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,7 +41,7 @@ export default function ManagerDashboard() {
   const resolved = tickets.filter((t) => t.status === 'Resolved').length;
   const pendingList = tickets.filter((t) => t.status === 'Pending').slice(0, 4);
 
-  const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
+  const openDrawer = useOpenDrawer();
 
   const header = <Header title="Maintenance Desk" subtitle={user?.name || 'Property Manager'} showDrawer onDrawerPress={openDrawer} />;
 
@@ -59,7 +58,7 @@ export default function ManagerDashboard() {
 
         {pending > 0 && (
           <TouchableOpacity style={styles.alertBanner} onPress={() => router.push('/(drawer)/manager/tickets')} activeOpacity={0.85}>
-            <Ionicons name="notifications" size={24} color={COLORS.pending} />
+            <Ionicons name="notifications" size={21} color={COLORS.pending} />
             <View style={styles.alertBannerTextContainer}>
               <Text style={styles.alertBannerTitle}>{pending} Pending Complaint{pending > 1 ? 's' : ''} Require Attention</Text>
               <Text style={styles.alertBannerSubtitle}>Review new tickets and assign technicians</Text>
@@ -91,11 +90,11 @@ export default function ManagerDashboard() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
-  sectionTitle: { ...TYPOGRAPHY.h2, color: COLORS.text, marginTop: SPACING.sm, marginBottom: SPACING.md },
+  sectionTitle: { ...TYPOGRAPHY.h3, color: COLORS.text, fontSize: 17, marginTop: SPACING.sm, marginBottom: SPACING.md },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md, marginTop: SPACING.xs, marginBottom: SPACING.md },
   sectionHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: SPACING.lg, marginBottom: SPACING.md },
-  viewAllText: { ...TYPOGRAPHY.captionBold, color: COLORS.primaryLight },
-  alertBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.pendingBg, borderRadius: RADIUS.xl, padding: SPACING.md, borderWidth: 1, borderColor: 'rgba(245,158,11,0.3)', gap: SPACING.md, marginVertical: SPACING.sm },
+  viewAllText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary },
+  alertBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.pendingBg, borderRadius: RADIUS.lg, padding: SPACING.md + 2, gap: SPACING.md, marginVertical: SPACING.sm, ...SHADOWS.subtle },
   alertBannerTextContainer: { flex: 1 },
   alertBannerTitle: { ...TYPOGRAPHY.bodyBold, color: COLORS.pending },
   alertBannerSubtitle: { ...TYPOGRAPHY.small, color: COLORS.textSecondary, marginTop: 2 },

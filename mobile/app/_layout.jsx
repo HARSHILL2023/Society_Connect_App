@@ -5,19 +5,20 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '../src/context/AuthContext';
+import { COLORS } from '../src/constants/theme';
 
 // Root layout - wraps app with providers and defines top-level routes
 // Beginner: Stack = stack navigation. headerShown false = no default header
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#090D16' }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: COLORS.background }}>
       <SafeAreaProvider>
-        <StatusBar style="light" backgroundColor="#090D16" />
+        <StatusBar style="dark" backgroundColor={COLORS.background} />
         <AuthProvider>
           <Stack
             screenOptions={{
               headerShown: false,
-              contentStyle: { backgroundColor: '#090D16' },
+              contentStyle: { backgroundColor: COLORS.background },
               animation: 'fade',
             }}
           >

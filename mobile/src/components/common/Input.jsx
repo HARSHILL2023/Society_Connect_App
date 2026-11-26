@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../constants/theme';
 
 export const Input = ({
   label,
@@ -45,15 +45,15 @@ export const Input = ({
           styles.inputContainer,
           isFocused && styles.inputFocused,
           error ? styles.inputError : null,
-          multiline && { height: numberOfLines * 24 + 32, alignItems: 'flex-start' },
+          multiline && { minHeight: numberOfLines * 24 + 32, alignItems: 'flex-start' },
           !editable && styles.inputDisabled,
         ]}
       >
         {icon && (
           <Ionicons
             name={icon}
-            size={20}
-            color={isFocused ? COLORS.primaryLight : COLORS.textMuted}
+            size={19}
+            color={isFocused ? COLORS.text : COLORS.textMuted}
             style={styles.leftIcon}
           />
         )}
@@ -85,13 +85,13 @@ export const Input = ({
           >
             <Ionicons
               name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-              size={20}
-              color={COLORS.textSecondary}
+              size={19}
+              color={COLORS.textMuted}
             />
           </TouchableOpacity>
         ) : rightIcon ? (
           <TouchableOpacity onPress={onRightIconPress} style={styles.rightIcon}>
-            <Ionicons name={rightIcon} size={20} color={COLORS.textSecondary} />
+            <Ionicons name={rightIcon} size={19} color={COLORS.textMuted} />
           </TouchableOpacity>
         ) : null}
       </View>
@@ -108,14 +108,12 @@ const styles = StyleSheet.create({
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SPACING.xs + 2,
+    marginBottom: 6,
   },
   label: {
     ...TYPOGRAPHY.captionBold,
     color: COLORS.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    fontSize: 11,
+    fontSize: 12,
   },
   requiredMark: {
     color: COLORS.danger,
@@ -125,28 +123,26 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    backgroundColor: COLORS.surfaceElevated,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
-    minHeight: 48,
+    minHeight: 50,
   },
   inputFocused: {
-    borderColor: COLORS.primaryLight,
-    backgroundColor: COLORS.surfaceElevated,
+    backgroundColor: COLORS.surface,
+    ...SHADOWS.subtle,
   },
   inputError: {
-    borderColor: COLORS.danger,
+    backgroundColor: COLORS.dangerBg,
   },
   inputDisabled: {
     opacity: 0.6,
   },
   leftIcon: {
-    marginRight: SPACING.sm,
+    marginRight: 10,
   },
   rightIcon: {
-    padding: SPACING.xs,
+    padding: 2,
   },
   input: {
     flex: 1,
@@ -156,12 +152,12 @@ const styles = StyleSheet.create({
   },
   multilineInput: {
     textAlignVertical: 'top',
-    paddingTop: SPACING.sm,
+    paddingTop: 12,
   },
   errorText: {
     ...TYPOGRAPHY.small,
     color: COLORS.danger,
-    marginTop: 4,
+    marginTop: 5,
     marginLeft: 2,
   },
 });

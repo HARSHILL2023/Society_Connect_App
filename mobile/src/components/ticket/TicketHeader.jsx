@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../constants/theme';
 import Badge from '../common/Badge';
 
 export const TicketHeader = ({ ticket }) => {
@@ -20,7 +20,7 @@ export const TicketHeader = ({ ticket }) => {
       {ticket.statusNote ? (
         <View style={styles.noteBox}>
           <View style={styles.noteHeader}>
-            <Ionicons name="clipboard-outline" size={16} color={COLORS.primaryLight} />
+            <Ionicons name="clipboard-outline" size={15} color={COLORS.textSecondary} />
             <Text style={styles.noteTitle}>Staff Maintenance Note</Text>
           </View>
           <Text style={styles.noteText}>{ticket.statusNote}</Text>
@@ -36,8 +36,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOWS.card,
   },
   topRow: {
     flexDirection: 'row',
@@ -55,8 +54,8 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.small,
     color: COLORS.textMuted,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: SPACING.xs,
+    letterSpacing: 0.6,
+    marginBottom: 6,
   },
   description: {
     ...TYPOGRAPHY.body,
@@ -64,27 +63,26 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   noteBox: {
-    marginTop: SPACING.md,
-    backgroundColor: COLORS.primaryGlow,
+    marginTop: SPACING.lg,
+    backgroundColor: COLORS.surfaceElevated,
     borderRadius: RADIUS.md,
     padding: SPACING.md,
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.primaryLight,
   },
   noteHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 4,
+    marginBottom: 5,
   },
   noteTitle: {
     ...TYPOGRAPHY.captionBold,
-    color: COLORS.primaryLight,
+    color: COLORS.textSecondary,
+    fontSize: 12,
   },
   noteText: {
     ...TYPOGRAPHY.caption,
     color: COLORS.text,
-    lineHeight: 18,
+    lineHeight: 19,
   },
 });
 

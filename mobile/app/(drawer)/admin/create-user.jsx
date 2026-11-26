@@ -1,17 +1,16 @@
+import { useOpenDrawer } from '../../../src/utils/navigation';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { userAPI, getErrorMessage } from '../../../src/services/api';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../../src/constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../../src/constants/theme';
 import Header from '../../../src/components/common/Header';
 import Input from '../../../src/components/common/Input';
 import Button from '../../../src/components/common/Button';
 
 export default function CreateUser() {
-  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,7 +47,7 @@ export default function CreateUser() {
     }
   };
 
-  const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
+  const openDrawer = useOpenDrawer();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -98,15 +97,15 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
   keyboardView: { flex: 1 },
   scrollContent: { padding: SPACING.lg, paddingBottom: SPACING.xxxl },
-  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, borderWidth: 1, borderColor: COLORS.border },
-  errorBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.dangerBg, borderColor: 'rgba(239,68,68,0.3)', borderWidth: 1, borderRadius: RADIUS.md, padding: SPACING.md, marginBottom: SPACING.md, gap: SPACING.sm },
+  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, ...SHADOWS.card },
+  errorBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.dangerBg, borderRadius: RADIUS.md, padding: SPACING.md, marginBottom: SPACING.md, gap: SPACING.sm },
   errorBannerText: { ...TYPOGRAPHY.caption, color: COLORS.danger, flex: 1, fontWeight: '500' },
   roleGroup: { marginBottom: SPACING.md + 2 },
-  roleLabel: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 11, marginBottom: SPACING.xs + 2 },
+  roleLabel: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, fontSize: 12, marginBottom: 8 },
   roleRow: { flexDirection: 'row', gap: SPACING.sm },
-  rolePill: { flex: 1, paddingVertical: 8, alignItems: 'center', justifyContent: 'center', borderRadius: RADIUS.md, backgroundColor: COLORS.surfaceElevated, borderWidth: 1, borderColor: COLORS.border },
-  selectedRolePill: { backgroundColor: COLORS.primary, borderColor: COLORS.primaryLight },
-  rolePillText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary },
+  rolePill: { flex: 1, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', borderRadius: RADIUS.md, backgroundColor: COLORS.surfaceElevated },
+  selectedRolePill: { backgroundColor: COLORS.primary },
+  rolePillText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, fontSize: 12.5 },
   selectedRolePillText: { color: COLORS.white },
   submitButton: { marginTop: SPACING.md },
 });

@@ -1,3 +1,4 @@
+import { useOpenDrawer } from '../../../src/utils/navigation';
 import React, { useState } from 'react';
 import {
   View,
@@ -10,12 +11,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from '@react-navigation/native';
+import { router, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../../src/context/AuthContext';
 import { ticketAPI, getErrorMessage } from '../../../src/services/api';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY, CATEGORIES, PRIORITIES } from '../../../src/constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS, CATEGORIES, PRIORITIES } from '../../../src/constants/theme';
 import Header from '../../../src/components/common/Header';
 import Input from '../../../src/components/common/Input';
 import Button from '../../../src/components/common/Button';
@@ -25,7 +24,6 @@ import ImageEvidencePicker from '../../../src/components/complaint/ImageEvidence
 
 export default function RaiseComplaint() {
   const { user } = useAuth();
-  const navigation = useNavigation();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -87,7 +85,7 @@ export default function RaiseComplaint() {
     router.push('/(drawer)/(tabs)/tickets');
   };
 
-  const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
+  const openDrawer = useOpenDrawer();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -102,7 +100,7 @@ export default function RaiseComplaint() {
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.flatBanner}>
             <View style={styles.flatBannerIcon}>
-              <Ionicons name="business" size={20} color={COLORS.primaryLight} />
+              <Ionicons name="business" size={18} color={COLORS.text} />
             </View>
             <View style={styles.flatBannerTextContainer}>
               <Text style={styles.flatBannerTitle}>Filing for Flat</Text>
@@ -175,23 +173,23 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
   keyboardView: { flex: 1 },
   scrollContent: { padding: SPACING.lg, paddingBottom: SPACING.xxxl },
-  flatBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surfaceElevated, borderRadius: RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, borderWidth: 1, borderColor: COLORS.border },
-  flatBannerIcon: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(99,102,241,0.15)', alignItems: 'center', justifyContent: 'center', marginRight: SPACING.md },
+  flatBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.surface, borderRadius: RADIUS.lg, padding: SPACING.md, marginBottom: SPACING.md, ...SHADOWS.card },
+  flatBannerIcon: { width: 38, height: 38, borderRadius: RADIUS.sm, backgroundColor: COLORS.surfaceElevated, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.md },
   flatBannerTextContainer: { flex: 1 },
   flatBannerTitle: { ...TYPOGRAPHY.small, color: COLORS.textSecondary, textTransform: 'uppercase' },
   flatBannerValue: { ...TYPOGRAPHY.bodyBold, color: COLORS.text },
-  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, borderWidth: 1, borderColor: COLORS.border },
+  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, ...SHADOWS.card },
   selectorGroup: { marginBottom: SPACING.md + 2 },
-  selectorLabel: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 11, marginBottom: SPACING.xs + 2 },
-  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs + 2 },
-  categoryTile: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: RADIUS.md, backgroundColor: COLORS.surfaceElevated, borderWidth: 1, borderColor: COLORS.border },
-  selectedCategoryTile: { backgroundColor: 'rgba(99,102,241,0.2)', borderColor: COLORS.primaryLight },
-  categoryTileText: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, fontWeight: '500' },
-  selectedCategoryTileText: { color: COLORS.primaryLight, fontWeight: '700' },
+  selectorLabel: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, fontSize: 12, marginBottom: 8 },
+  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
+  categoryTile: { paddingVertical: 9, paddingHorizontal: 14, borderRadius: RADIUS.full, backgroundColor: COLORS.surfaceElevated },
+  selectedCategoryTile: { backgroundColor: COLORS.primary },
+  categoryTileText: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, fontWeight: '500', fontSize: 12.5 },
+  selectedCategoryTileText: { color: COLORS.white, fontWeight: '600' },
   priorityRow: { flexDirection: 'row', gap: SPACING.sm },
-  priorityPill: { flex: 1, paddingVertical: 8, alignItems: 'center', justifyContent: 'center', borderRadius: RADIUS.md, backgroundColor: COLORS.surfaceElevated, borderWidth: 1, borderColor: COLORS.border },
-  selectedPriorityPill: { backgroundColor: COLORS.primary, borderColor: COLORS.primaryLight },
-  priorityText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary },
+  priorityPill: { flex: 1, paddingVertical: 10, alignItems: 'center', justifyContent: 'center', borderRadius: RADIUS.md, backgroundColor: COLORS.surfaceElevated },
+  selectedPriorityPill: { backgroundColor: COLORS.primary },
+  priorityText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, fontSize: 12.5 },
   selectedPriorityText: { color: COLORS.white },
   submitButton: { marginTop: SPACING.md },
 });

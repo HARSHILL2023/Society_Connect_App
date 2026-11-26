@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../constants/theme';
 import Button from '../common/Button';
 
 export const TicketStaffActions = ({
@@ -14,13 +14,13 @@ export const TicketStaffActions = ({
     <View style={styles.card}>
       <Text style={styles.cardSectionHeader}>Staff Action Desk</Text>
       <Text style={styles.actionPrompt}>
-        Update the current progress or complete the maintenance service
+        Update progress or close the ticket once the work is complete.
       </Text>
 
       <View style={styles.staffButtonsRow}>
         {ticket.status !== 'In Progress' && (
           <Button
-            title="Mark In Progress"
+            title="In Progress"
             onPress={() => onOpenStatusModal('In Progress')}
             variant="secondary"
             icon="construct-outline"
@@ -30,7 +30,7 @@ export const TicketStaffActions = ({
 
         {ticket.status !== 'Resolved' && (
           <Button
-            title="Mark Resolved"
+            title="Resolve"
             onPress={() => onOpenStatusModal('Resolved')}
             variant="primary"
             icon="checkmark-circle-outline"
@@ -42,7 +42,7 @@ export const TicketStaffActions = ({
           <Button
             title="Reopen Ticket"
             onPress={() => onOpenStatusModal('Pending')}
-            variant="outline"
+            variant="secondary"
             icon="refresh-outline"
             style={styles.staffButton}
           />
@@ -58,18 +58,17 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOWS.card,
   },
   cardSectionHeader: {
     ...TYPOGRAPHY.h3,
     color: COLORS.text,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.xs,
   },
   actionPrompt: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.md,
+    color: COLORS.textMuted,
+    marginBottom: SPACING.lg,
   },
   staffButtonsRow: {
     flexDirection: 'row',

@@ -1,12 +1,12 @@
+import { useOpenDrawer } from '../../../src/utils/navigation';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../src/context/AuthContext';
 import { adminAPI } from '../../../src/services/api';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../../src/constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../../src/constants/theme';
 import Header from '../../../src/components/common/Header';
 import StatCard from '../../../src/components/common/StatCard';
 import TicketCard from '../../../src/components/ticket/TicketCard';
@@ -16,7 +16,6 @@ import ScreenWrapper from '../../../src/components/common/ScreenWrapper';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const navigation = useNavigation();
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,7 +36,7 @@ export default function AdminDashboard() {
     }, [])
   );
 
-  const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
+  const openDrawer = useOpenDrawer();
 
   const header = <Header title="Command Center" subtitle={user?.name || 'Administrator'} showDrawer onDrawerPress={openDrawer} />;
 
@@ -46,11 +45,11 @@ export default function AdminDashboard() {
       <ScreenWrapper header={header}>
         <View style={styles.quickActionsRow}>
           <TouchableOpacity style={styles.quickActionButton} onPress={() => router.push('/(drawer)/admin/create-user')} activeOpacity={0.8}>
-            <Ionicons name="person-add" size={20} color={COLORS.white} />
+            <Ionicons name="person-add" size={18} color={COLORS.white} />
             <Text style={styles.quickActionText}>Add Account</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.quickActionButton, styles.quickActionSecondary]} onPress={() => router.push('/(drawer)/admin/users')} activeOpacity={0.8}>
-            <Ionicons name="people" size={20} color={COLORS.primaryLight} />
+            <Ionicons name="people" size={18} color={COLORS.text} />
             <Text style={[styles.quickActionText, { color: COLORS.text }]}>Manage Users</Text>
           </TouchableOpacity>
         </View>
@@ -103,18 +102,18 @@ export default function AdminDashboard() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
   quickActionsRow: { flexDirection: 'row', gap: SPACING.md, marginBottom: SPACING.lg },
-  quickActionButton: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.primary, paddingVertical: SPACING.md, borderRadius: RADIUS.md, gap: SPACING.sm },
-  quickActionSecondary: { backgroundColor: COLORS.surfaceElevated, borderWidth: 1, borderColor: COLORS.border },
-  quickActionText: { ...TYPOGRAPHY.bodyBold, color: COLORS.white },
-  sectionTitle: { ...TYPOGRAPHY.h2, color: COLORS.text, marginBottom: SPACING.sm },
+  quickActionButton: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.primary, paddingVertical: 14, borderRadius: RADIUS.md, gap: SPACING.sm },
+  quickActionSecondary: { backgroundColor: COLORS.surface },
+  quickActionText: { ...TYPOGRAPHY.captionBold, color: COLORS.white, fontSize: 13.5 },
+  sectionTitle: { ...TYPOGRAPHY.h3, color: COLORS.text, fontSize: 17, marginBottom: SPACING.sm },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md, marginTop: SPACING.xs, marginBottom: SPACING.md },
-  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.lg, marginBottom: SPACING.lg, borderWidth: 1, borderColor: COLORS.border },
+  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.lg, marginBottom: SPACING.lg, ...SHADOWS.card },
   cardSectionHeader: { ...TYPOGRAPHY.h3, color: COLORS.text, marginBottom: SPACING.md },
   categoryStatsGrid: { gap: SPACING.sm },
-  categoryStatRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
-  categoryStatName: { ...TYPOGRAPHY.body, color: COLORS.textSecondary },
+  categoryStatRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8 },
+  categoryStatName: { ...TYPOGRAPHY.body, color: COLORS.textSecondary, fontSize: 14 },
   categoryStatCountPill: { paddingVertical: 2, paddingHorizontal: 8, borderRadius: RADIUS.sm, backgroundColor: COLORS.surfaceElevated },
-  categoryStatCount: { ...TYPOGRAPHY.small, color: COLORS.primaryLight, fontWeight: '600' },
+  categoryStatCount: { ...TYPOGRAPHY.small, color: COLORS.textSecondary, fontWeight: '600' },
   sectionHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: SPACING.sm, marginBottom: SPACING.md },
-  viewAllText: { ...TYPOGRAPHY.captionBold, color: COLORS.primaryLight },
+  viewAllText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary },
 });

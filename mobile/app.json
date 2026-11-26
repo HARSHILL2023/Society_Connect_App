@@ -6,39 +6,46 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#090D16"
-    },
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.societyconnect.app",
       "infoPlist": {
         "NSCameraUsageDescription": "Society Connect needs camera access to capture complaint evidence photos.",
-        "NSPhotoLibraryUsageDescription": "Society Connect needs photo library access to attach complaint evidence from gallery."
+        "NSPhotoLibraryUsageDescription": "Society Connect needs photo library access to attach complaint evidence from gallery.",
+        "NSFaceIDUsageDescription": "Society Connect uses Face ID for quick and secure biometric login."
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#090D16"
+        "backgroundColor": "#F4F4F5"
       },
       "package": "com.societyconnect.app",
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
       ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "http://192.168.1.238:5000/api",
+      "apiUrl": "http://192.168.1.170:5000/api",
       "productionApiUrl": "https://society-connect-backend.onrender.com/api"
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#F4F4F5"
+        }
+      ],
       "expo-font",
       "expo-audio",
       "expo-asset",

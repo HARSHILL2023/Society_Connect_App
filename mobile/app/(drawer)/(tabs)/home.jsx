@@ -1,12 +1,12 @@
+import { useOpenDrawer } from '../../../src/utils/navigation';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../src/context/AuthContext';
 import { ticketAPI } from '../../../src/services/api';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../../src/constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../../src/constants/theme';
 import Header from '../../../src/components/common/Header';
 import StatCard from '../../../src/components/common/StatCard';
 import TicketCard from '../../../src/components/ticket/TicketCard';
@@ -15,7 +15,6 @@ import ScreenWrapper from '../../../src/components/common/ScreenWrapper';
 
 export default function Home() {
   const { user } = useAuth();
-  const navigation = useNavigation();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +40,7 @@ export default function Home() {
   const resolved = tickets.filter((t) => t.status === 'Resolved').length;
   const recent = tickets.slice(0, 4);
 
-  const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
+  const openDrawer = useOpenDrawer();
 
   const header = (
     <Header
@@ -60,7 +59,7 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <ScreenWrapper header={header}>
-        <TouchableOpacity style={styles.actionBanner} onPress={() => router.push('/(drawer)/(tabs)/raise-complaint')} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.actionBanner} onPress={() => router.push('/(drawer)/(tabs)/raise-complaint')} activeOpacity={0.9}>
           <View style={styles.bannerLeft}>
             <View style={styles.bannerIconCircle}>
               <Ionicons name="add-circle" size={26} color={COLORS.white} />
@@ -74,7 +73,7 @@ export default function Home() {
         </TouchableOpacity>
 
         <View style={styles.flatInfo}>
-          <Ionicons name="home-outline" size={16} color={COLORS.primaryLight} />
+          <Ionicons name="home-outline" size={14} color={COLORS.textMuted} />
           <Text style={styles.flatInfoText}>{user?.flatNumber || 'Flat not set'}</Text>
         </View>
 
@@ -120,18 +119,18 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
-  avatarButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.primaryLight },
+  avatarButton: { width: 42, height: 42, borderRadius: RADIUS.sm, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center' },
   avatarInitial: { fontSize: 16, fontWeight: '700', color: COLORS.white },
-  actionBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.primary, borderRadius: RADIUS.xl, padding: SPACING.lg, marginBottom: SPACING.xl, shadowColor: COLORS.primary, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12, elevation: 6 },
+  actionBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.primary, borderRadius: RADIUS.xl, padding: SPACING.lg, marginBottom: SPACING.lg, ...SHADOWS.card },
   bannerLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  bannerIconCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', marginRight: SPACING.md },
+  bannerIconCircle: { width: 44, height: 44, borderRadius: RADIUS.sm, backgroundColor: 'rgba(255,255,255,0.14)', alignItems: 'center', justifyContent: 'center', marginRight: SPACING.md },
   bannerTextContainer: { flex: 1 },
   bannerTitle: { ...TYPOGRAPHY.h3, color: COLORS.white },
-  bannerSubtitle: { ...TYPOGRAPHY.small, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
-  flatInfo: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, backgroundColor: COLORS.primaryGlow, borderRadius: RADIUS.full, borderWidth: 1, borderColor: 'rgba(16,185,129,0.3)', marginBottom: SPACING.lg, alignSelf: 'flex-start' },
-  flatInfoText: { ...TYPOGRAPHY.small, color: COLORS.primaryLight, fontWeight: '600' },
-  sectionTitle: { ...TYPOGRAPHY.h2, color: COLORS.text },
+  bannerSubtitle: { ...TYPOGRAPHY.small, color: 'rgba(255,255,255,0.72)', marginTop: 3 },
+  flatInfo: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SPACING.md, paddingVertical: 6, backgroundColor: COLORS.surface, borderRadius: RADIUS.full, marginBottom: SPACING.lg, alignSelf: 'flex-start' },
+  flatInfoText: { ...TYPOGRAPHY.small, color: COLORS.textSecondary, fontWeight: '600' },
+  sectionTitle: { ...TYPOGRAPHY.h3, color: COLORS.text, fontSize: 17 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md, marginTop: SPACING.sm, marginBottom: SPACING.md },
   sectionHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: SPACING.md, marginBottom: SPACING.md },
-  viewAllText: { ...TYPOGRAPHY.captionBold, color: COLORS.primaryLight },
+  viewAllText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary },
 });

@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAuth } from '../src/context/AuthContext';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../src/constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../src/constants/theme';
 import Input from '../src/components/common/Input';
 import Button from '../src/components/common/Button';
 import { getErrorMessage } from '../src/services/api';
@@ -99,10 +99,10 @@ const styles = StyleSheet.create({
   keyboardView: { flex: 1 },
   scrollContent: { flexGrow: 1, padding: SPACING.lg, paddingBottom: SPACING.xxxl },
   backButton: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md, paddingVertical: SPACING.xs },
-  backText: { ...TYPOGRAPHY.body, color: COLORS.textSecondary, marginLeft: 4 },
+  backText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, marginLeft: 4 },
   header: { marginBottom: SPACING.lg },
   title: { ...TYPOGRAPHY.h1, color: COLORS.text },
   subtitle: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, marginTop: 4, lineHeight: 18 },
-  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, borderWidth: 1, borderColor: COLORS.border },
+  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, ...SHADOWS.card },
   registerButton: { marginTop: SPACING.sm },
 });

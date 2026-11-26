@@ -6,9 +6,9 @@ import { useAuth } from '../../src/context/AuthContext';
 import { COLORS } from '../../src/constants/theme';
 import LoadingScreen from '../../src/components/common/LoadingScreen';
 
-import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { DrawerContentScrollView } from 'expo-router/drawer';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { SPACING, RADIUS, TYPOGRAPHY } from '../../src/constants/theme';
+import { SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../src/constants/theme';
 
 function SocietyDrawerContent(props) {
   const { user, logout, role } = useAuth();
@@ -103,22 +103,22 @@ function SocietyDrawerContent(props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1, backgroundColor: COLORS.surface },
   content: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.xl, paddingBottom: SPACING.xxxl },
   brandSection: { alignItems: 'center', marginBottom: SPACING.xl },
-  appName: { ...TYPOGRAPHY.h1, color: COLORS.primary, fontWeight: '800' },
-  tagline: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, letterSpacing: 1, textTransform: 'uppercase', marginTop: 2 },
+  appName: { ...TYPOGRAPHY.h2, color: COLORS.text, fontWeight: '700' },
+  tagline: { ...TYPOGRAPHY.small, color: COLORS.textMuted, letterSpacing: 1, textTransform: 'uppercase', marginTop: 3 },
   userSection: { alignItems: 'center', marginBottom: SPACING.lg },
-  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.primaryLight, marginBottom: SPACING.md },
-  avatarText: { fontSize: 24, fontWeight: '700', color: COLORS.white },
+  avatar: { width: 64, height: 64, borderRadius: 22, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', marginBottom: SPACING.md },
+  avatarText: { fontSize: 22, fontWeight: '700', color: COLORS.white },
   userName: { ...TYPOGRAPHY.h3, color: COLORS.text },
-  userRole: { ...TYPOGRAPHY.captionBold, color: COLORS.primaryLight, textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
-  flatPill: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, backgroundColor: COLORS.primaryGlow, borderRadius: RADIUS.full, borderWidth: 1, borderColor: 'rgba(16,185,129,0.3)', marginTop: SPACING.sm },
-  flatText: { ...TYPOGRAPHY.small, color: COLORS.primaryLight, fontWeight: '600' },
-  divider: { height: 1, backgroundColor: COLORS.border, marginVertical: SPACING.lg, opacity: 0.5 },
-  item: { flexDirection: 'row', alignItems: 'center', paddingVertical: SPACING.md, paddingHorizontal: SPACING.md, borderRadius: RADIUS.md, marginBottom: 4, gap: SPACING.md },
-  itemLabel: { ...TYPOGRAPHY.bodyBold, color: COLORS.textSecondary, fontSize: 15 },
-  logoutItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: SPACING.md, paddingHorizontal: SPACING.md, gap: SPACING.md },
+  userRole: { ...TYPOGRAPHY.small, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1.2, marginTop: 4 },
+  flatPill: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, backgroundColor: COLORS.surfaceElevated, borderRadius: RADIUS.full, marginTop: SPACING.sm },
+  flatText: { ...TYPOGRAPHY.small, color: COLORS.textSecondary, fontWeight: '600' },
+  divider: { height: 0, marginVertical: SPACING.md },
+  item: { flexDirection: 'row', alignItems: 'center', paddingVertical: SPACING.md, paddingHorizontal: SPACING.md, borderRadius: RADIUS.md, marginBottom: 2, gap: SPACING.md },
+  itemLabel: { ...TYPOGRAPHY.bodyBold, color: COLORS.text, fontSize: 14.5 },
+  logoutItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: SPACING.md, paddingHorizontal: SPACING.md, gap: SPACING.md, borderRadius: RADIUS.md, backgroundColor: COLORS.dangerBg },
   logoutLabel: { ...TYPOGRAPHY.bodyBold, color: COLORS.danger, fontSize: 15 },
   footer: { alignItems: 'center', marginTop: SPACING.xxxl },
   version: { ...TYPOGRAPHY.small, color: COLORS.textMuted },
@@ -142,9 +142,9 @@ export default function DrawerLayout() {
       drawerContent={(props) => <SocietyDrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
-        drawerStyle: { backgroundColor: COLORS.background, width: 280 },
+        drawerStyle: { backgroundColor: COLORS.surface, width: 288 },
         drawerType: 'front',
-        overlayColor: 'rgba(0,0,0,0.6)',
+        overlayColor: COLORS.overlay,
       }}
     >
       {/* Tabs group - for Members */}

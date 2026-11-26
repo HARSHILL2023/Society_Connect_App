@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   iconBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.surfaceElevated, alignItems: 'center', justifyContent: 'center' },
   previewImage: { flex: 1, backgroundColor: COLORS.black, marginHorizontal: SPACING.lg, borderRadius: RADIUS.lg },
   previewActions: { flexDirection: 'row', gap: SPACING.md, padding: SPACING.lg },
-  retakeBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACING.sm, paddingVertical: SPACING.md, borderRadius: RADIUS.md, backgroundColor: COLORS.surfaceElevated, borderWidth: 1, borderColor: COLORS.border },
+  retakeBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACING.sm, paddingVertical: SPACING.md, borderRadius: RADIUS.md, backgroundColor: COLORS.surfaceElevated },
   retakeText: { ...TYPOGRAPHY.bodyBold, color: COLORS.text },
   useBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACING.sm, paddingVertical: SPACING.md, borderRadius: RADIUS.md, backgroundColor: COLORS.primary },
   useText: { ...TYPOGRAPHY.bodyBold, color: COLORS.white },

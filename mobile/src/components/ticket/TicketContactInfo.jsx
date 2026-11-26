@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../constants/theme';
 
 export const TicketContactInfo = ({ ticket }) => {
   return (
@@ -10,7 +10,7 @@ export const TicketContactInfo = ({ ticket }) => {
 
       <View style={styles.infoRow}>
         <View style={styles.infoIconBox}>
-          <Ionicons name="business-outline" size={18} color={COLORS.primaryLight} />
+          <Ionicons name="business-outline" size={17} color={COLORS.text} />
         </View>
         <View style={styles.infoTextContainer}>
           <Text style={styles.infoLabel}>Flat / Unit</Text>
@@ -22,7 +22,7 @@ export const TicketContactInfo = ({ ticket }) => {
 
       <View style={styles.infoRow}>
         <View style={styles.infoIconBox}>
-          <Ionicons name="person-outline" size={18} color={COLORS.primaryLight} />
+          <Ionicons name="person-outline" size={17} color={COLORS.text} />
         </View>
         <View style={styles.infoTextContainer}>
           <Text style={styles.infoLabel}>Raised By</Text>
@@ -35,7 +35,7 @@ export const TicketContactInfo = ({ ticket }) => {
       {ticket.raisedBy?.email && (
         <View style={styles.infoRow}>
           <View style={styles.infoIconBox}>
-            <Ionicons name="mail-outline" size={18} color={COLORS.primaryLight} />
+            <Ionicons name="mail-outline" size={17} color={COLORS.text} />
           </View>
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoLabel}>Email</Text>
@@ -45,9 +45,9 @@ export const TicketContactInfo = ({ ticket }) => {
       )}
 
       {ticket.raisedBy?.phone && (
-        <View style={styles.infoRow}>
+        <View style={[styles.infoRow, styles.lastRow]}>
           <View style={styles.infoIconBox}>
-            <Ionicons name="call-outline" size={18} color={COLORS.primaryLight} />
+            <Ionicons name="call-outline" size={17} color={COLORS.text} />
           </View>
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoLabel}>Phone</Text>
@@ -65,29 +65,29 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOWS.card,
   },
   cardSectionHeader: {
     ...TYPOGRAPHY.h3,
     color: COLORS.text,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.lg,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: SPACING.md,
   },
+  lastRow: {
+    marginBottom: 0,
+  },
   infoIconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 36,
+    height: 36,
+    borderRadius: RADIUS.sm,
     backgroundColor: COLORS.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   infoTextContainer: {
     flex: 1,
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.bodyBold,
     color: COLORS.text,
     marginTop: 1,
+    fontSize: 14.5,
   },
 });
 

@@ -1,10 +1,10 @@
+import { useOpenDrawer } from '../../../src/utils/navigation';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../src/context/AuthContext';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../../src/constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../../src/constants/theme';
 import Header from '../../../src/components/common/Header';
 import Badge from '../../../src/components/common/Badge';
 import Button from '../../../src/components/common/Button';
@@ -14,7 +14,6 @@ import { getErrorMessage } from '../../../src/services/api';
 
 export default function ManagerProfile() {
   const { user, logout, updateProfile } = useAuth();
-  const navigation = useNavigation();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -36,7 +35,7 @@ export default function ManagerProfile() {
   };
 
   const handleConfirmLogout = async () => { setLogoutModalVisible(false); await logout(); };
-  const openDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
+  const openDrawer = useOpenDrawer();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -73,14 +72,14 @@ export default function ManagerProfile() {
           ) : (
             <View>
               <View style={styles.detailRow}>
-                <Ionicons name="mail-outline" size={18} color="#06B6D4" />
+                <Ionicons name="mail-outline" size={17} color={COLORS.textSecondary} />
                 <View style={styles.detailTextContainer}>
                   <Text style={styles.detailLabel}>Official Email</Text>
                   <Text style={styles.detailValue}>{user?.email}</Text>
                 </View>
               </View>
               <View style={styles.detailRow}>
-                <Ionicons name="call-outline" size={18} color="#06B6D4" />
+                <Ionicons name="call-outline" size={17} color={COLORS.textSecondary} />
                 <View style={styles.detailTextContainer}>
                   <Text style={styles.detailLabel}>Contact Phone</Text>
                   <Text style={styles.detailValue}>{user?.phone || 'Not Provided'}</Text>
@@ -92,12 +91,17 @@ export default function ManagerProfile() {
 
         <View style={styles.card}>
           <Text style={styles.cardSectionHeader}>Manager Responsibilities</Text>
-          <Text style={styles.noticeText}>
-            • Inspect pending complaints within 2 hours of submission.{'\n'}
-            • Update status to 'In Progress' when a technician has been dispatched.{'\n'}
-            • Add maintenance notes explaining replacement parts or technician arrival time.{'\n'}
-            • Mark tickets 'Resolved' only after resident satisfaction is verified.
-          </Text>
+          {[
+            'Inspect pending complaints within 2 hours of submission.',
+            "Update status to 'In Progress' once a technician is dispatched.",
+            'Add maintenance notes with parts used or technician arrival time.',
+            "Mark tickets 'Resolved' only after the resident confirms the fix.",
+          ].map((item) => (
+            <View key={item} style={styles.noticeRow}>
+              <View style={styles.noticeDot} />
+              <Text style={styles.noticeText}>{item}</Text>
+            </View>
+          ))}
         </View>
 
         <Button title="Sign Out" variant="danger" icon="log-out-outline" onPress={() => setLogoutModalVisible(true)} style={styles.logoutButton} />
@@ -111,9 +115,9 @@ export default function ManagerProfile() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
   scrollContent: { padding: SPACING.lg, paddingBottom: SPACING.xxxl },
-  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.lg, marginBottom: SPACING.md, borderWidth: 1, borderColor: COLORS.border },
+  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.lg, marginBottom: SPACING.md, ...SHADOWS.card },
   avatarRow: { flexDirection: 'row', alignItems: 'center' },
-  avatar: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#0891B2', alignItems: 'center', justifyContent: 'center', marginRight: SPACING.md, borderWidth: 2, borderColor: '#22D3EE' },
+  avatar: { width: 62, height: 62, borderRadius: 22, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', marginRight: SPACING.md },
   avatarText: { fontSize: 24, fontWeight: '700', color: COLORS.white },
   userHeadings: { flex: 1 },
   userName: { ...TYPOGRAPHY.h2, color: COLORS.text },
@@ -121,13 +125,15 @@ const styles = StyleSheet.create({
   roleBadge: { marginTop: 6 },
   cardHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SPACING.md },
   cardSectionHeader: { ...TYPOGRAPHY.h3, color: COLORS.text },
-  editToggleText: { ...TYPOGRAPHY.captionBold, color: '#06B6D4' },
+  editToggleText: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary },
   editForm: { marginTop: SPACING.xs },
   saveButton: { marginTop: SPACING.sm },
   detailRow: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md },
   detailTextContainer: { marginLeft: SPACING.md, flex: 1 },
   detailLabel: { ...TYPOGRAPHY.small, color: COLORS.textMuted },
   detailValue: { ...TYPOGRAPHY.bodyBold, color: COLORS.text, marginTop: 1 },
-  noticeText: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, lineHeight: 22 },
+  noticeRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: SPACING.sm },
+  noticeDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: COLORS.textMuted, marginTop: 7, marginRight: 9 },
+  noticeText: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, lineHeight: 21, flex: 1 },
   logoutButton: { marginTop: SPACING.md },
 });

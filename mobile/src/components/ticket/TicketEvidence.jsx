@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../constants/theme';
 
 // Displays evidence image (if any)
 export const TicketEvidence = ({ ticket }) => {
@@ -14,28 +14,22 @@ export const TicketEvidence = ({ ticket }) => {
     <View style={styles.card}>
       <Text style={styles.cardSectionHeader}>Evidence</Text>
 
-      <View style={styles.section}>
-        <View style={styles.labelRow}>
-          <Ionicons name="image-outline" size={16} color={COLORS.primaryLight} />
-          <Text style={styles.label}>Evidence Photo</Text>
+      <Pressable onPress={() => setModalVisible(true)} style={styles.imageWrapper}>
+        <Image source={{ uri: ticket.evidenceImage }} style={styles.image} resizeMode="cover" />
+        <View style={styles.zoomPill}>
+          <Ionicons name="expand-outline" size={12} color={COLORS.text} />
+          <Text style={styles.zoomText}>Tap to expand</Text>
         </View>
-        <Pressable onPress={() => setModalVisible(true)} style={styles.imageWrapper}>
-          <Image source={{ uri: ticket.evidenceImage }} style={styles.image} resizeMode="cover" />
-          <View style={styles.zoomPill}>
-            <Ionicons name="expand-outline" size={14} color={COLORS.white} />
-            <Text style={styles.zoomText}>Tap to expand</Text>
-          </View>
-        </Pressable>
+      </Pressable>
 
-        <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
-          <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-            <Image source={{ uri: ticket.evidenceImage }} style={styles.modalImage} resizeMode="contain" />
-            <TouchableOpacity style={styles.closeBtn} onPress={() => setModalVisible(false)}>
-              <Ionicons name="close" size={24} color={COLORS.white} />
-            </TouchableOpacity>
-          </Pressable>
-        </Modal>
-      </View>
+      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+          <Image source={{ uri: ticket.evidenceImage }} style={styles.modalImage} resizeMode="contain" />
+          <TouchableOpacity style={styles.closeBtn} onPress={() => setModalVisible(false)}>
+            <Ionicons name="close" size={22} color={COLORS.white} />
+          </TouchableOpacity>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
@@ -46,31 +40,43 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     padding: SPACING.lg,
     marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOWS.card,
   },
   cardSectionHeader: { ...TYPOGRAPHY.h3, color: COLORS.text, marginBottom: SPACING.md },
-  section: { marginBottom: SPACING.md },
-  labelRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: SPACING.xs },
-  label: { ...TYPOGRAPHY.captionBold, color: COLORS.primaryLight, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 11 },
-  imageWrapper: { borderRadius: RADIUS.lg, overflow: 'hidden', borderWidth: 1, borderColor: COLORS.border },
-  image: { width: '100%', height: 200, backgroundColor: COLORS.surfaceElevated },
+  imageWrapper: { borderRadius: RADIUS.lg, overflow: 'hidden' },
+  image: { width: '100%', height: 210, backgroundColor: COLORS.surfaceElevated },
   zoomPill: {
     position: 'absolute',
     bottom: SPACING.sm,
     right: SPACING.sm,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 4,
+    gap: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: RADIUS.full,
   },
-  zoomText: { ...TYPOGRAPHY.small, color: COLORS.white, fontSize: 10 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', alignItems: 'center', justifyContent: 'center', padding: SPACING.lg },
+  zoomText: { ...TYPOGRAPHY.small, color: COLORS.text, fontSize: 10.5, fontWeight: '600' },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(9, 9, 11, 0.94)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.lg,
+  },
   modalImage: { width: '100%', height: '80%' },
-  closeBtn: { position: 'absolute', top: 40, right: 20, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
+  closeBtn: {
+    position: 'absolute',
+    top: 48,
+    right: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default TicketEvidence;

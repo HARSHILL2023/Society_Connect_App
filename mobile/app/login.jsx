@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,18 +12,31 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAuth } from '../src/context/AuthContext';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../src/constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../src/constants/theme';
 import Input from '../src/components/common/Input';
 import Button from '../src/components/common/Button';
-import { getErrorMessage } from '../src/services/api';
+import { getErrorMessage, API_BASE_URL } from '../src/services/api';
 import ErrorBanner from '../src/components/common/ErrorBanner';
+import { getBiometryLabel } from '../src/utils/biometrics';
 
 export default function Login() {
-  const { login, isAuthenticated, role } = useAuth();
+  const {
+    login,
+    isAuthenticated,
+    role,
+    loginWithBiometrics,
+    isBiometricSupported,
+    biometricType,
+    biometricEnabled,
+    biometricEmail,
+    isBiometricLoading,
+    refreshBiometricState,
+  } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [hasAutoTriggeredBiometric, setHasAutoTriggeredBiometric] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim()) {
@@ -73,7 +86,7 @@ export default function Login() {
         >
           <View style={styles.header}>
             <View style={styles.logoContainer}>
-              <Ionicons name="business" size={38} color={COLORS.primaryLight} />
+              <Ionicons name="business" size={32} color={COLORS.white} />
             </View>
             <Text style={styles.appTitle}>Society Connect</Text>
             <Text style={styles.appSubtitle}>
@@ -134,19 +147,19 @@ export default function Login() {
                   style={styles.demoPill}
                   onPress={() => handleQuickLogin('admin@societyconnect.com')}
                 >
-                  <Text style={[styles.demoPillText, { color: '#F87171' }]}>Admin</Text>
+                  <Text style={styles.demoPillText}>Admin</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.demoPill}
                   onPress={() => handleQuickLogin('manager@societyconnect.com')}
                 >
-                  <Text style={[styles.demoPillText, { color: '#22D3EE' }]}>Manager</Text>
+                  <Text style={styles.demoPillText}>Manager</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.demoPill}
                   onPress={() => handleQuickLogin('john@societyconnect.com')}
                 >
-                  <Text style={[styles.demoPillText, { color: '#818CF8' }]}>Member</Text>
+                  <Text style={styles.demoPillText}>Member</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -158,6 +171,9 @@ export default function Login() {
               <Text style={styles.registerLink}>Register Flat</Text>
             </TouchableOpacity>
           </View>
+          {__DEV__ ? (
+            <Text style={styles.debugUrl}>Backend: {API_BASE_URL}</Text>
+          ) : null}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -170,33 +186,28 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, padding: SPACING.lg, justifyContent: 'center' },
   header: { alignItems: 'center', marginBottom: SPACING.xl },
   logoContainer: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    backgroundColor: COLORS.surfaceElevated,
+    width: 68,
+    height: 68,
+    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: COLORS.primary,
     marginBottom: SPACING.md,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 8,
+    ...SHADOWS.card,
   },
   appTitle: { ...TYPOGRAPHY.h1, color: COLORS.text, textAlign: 'center' },
   appSubtitle: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, textAlign: 'center', marginTop: 4, maxWidth: 280 },
-  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, borderWidth: 1, borderColor: COLORS.border },
+  card: { backgroundColor: COLORS.surface, borderRadius: RADIUS.xl, padding: SPACING.xl, ...SHADOWS.card },
   cardTitle: { ...TYPOGRAPHY.h2, color: COLORS.text, marginBottom: 4 },
   cardSubtitle: { ...TYPOGRAPHY.caption, color: COLORS.textSecondary, marginBottom: SPACING.lg },
   loginButton: { marginTop: SPACING.sm },
   quickAccessSection: { marginTop: SPACING.lg, paddingTop: SPACING.md, borderTopWidth: 1, borderTopColor: COLORS.border, alignItems: 'center' },
   quickAccessTitle: { ...TYPOGRAPHY.small, color: COLORS.textMuted, marginBottom: SPACING.sm, textTransform: 'uppercase', letterSpacing: 0.5 },
   demoButtonsRow: { flexDirection: 'row', gap: SPACING.sm },
-  demoPill: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: RADIUS.full, backgroundColor: COLORS.surfaceElevated, borderWidth: 1, borderColor: COLORS.border },
-  demoPillText: { ...TYPOGRAPHY.small, fontWeight: '600' },
+  demoPill: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: RADIUS.full, backgroundColor: COLORS.surfaceElevated },
+  demoPillText: { ...TYPOGRAPHY.small, fontWeight: '600', fontSize: 12, color: COLORS.text },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: SPACING.xl },
   footerText: { ...TYPOGRAPHY.body, color: COLORS.textSecondary },
   registerLink: { ...TYPOGRAPHY.bodyBold, color: COLORS.primaryLight },
+  debugUrl: { ...TYPOGRAPHY.caption, color: COLORS.textMuted, textAlign: 'center', marginTop: SPACING.md, fontSize: 10, opacity: 0.6 },
 });

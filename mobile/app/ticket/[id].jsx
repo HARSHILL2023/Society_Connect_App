@@ -116,11 +116,9 @@ export default function TicketDetail() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.background },
   modalGroup: { marginVertical: SPACING.sm },
-  modalLabel: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, marginBottom: SPACING.xs },
+  modalLabel: { ...TYPOGRAPHY.captionBold, color: COLORS.textSecondary, marginBottom: 6 },
   modalInput: {
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    backgroundColor: COLORS.surfaceElevated,
     borderRadius: RADIUS.md,
     color: COLORS.text,
     padding: SPACING.md,

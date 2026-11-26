@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../constants/theme';
 import Badge from '../common/Badge';
 
 export const UserCard = ({
@@ -11,17 +11,6 @@ export const UserCard = ({
   onDelete,
   style,
 }) => {
-  const getAvatarColor = (role) => {
-    switch (role) {
-      case 'Admin':
-        return '#EF4444';
-      case 'Manager':
-        return '#06B6D4';
-      default:
-        return '#6366F1';
-    }
-  };
-
   const getInitials = (name) => {
     if (!name) return 'U';
     return name
@@ -35,23 +24,14 @@ export const UserCard = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      activeOpacity={0.75}
+      activeOpacity={0.85}
       style={[styles.card, style]}
     >
       <View style={styles.contentRow}>
-        {/* Avatar Circle */}
-        <View
-          style={[
-            styles.avatar,
-            { backgroundColor: `${getAvatarColor(user.role)}25`, borderColor: getAvatarColor(user.role) },
-          ]}
-        >
-          <Text style={[styles.avatarText, { color: getAvatarColor(user.role) }]}>
-            {getInitials(user.name)}
-          </Text>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>{getInitials(user.name)}</Text>
         </View>
 
-        {/* User Info */}
         <View style={styles.infoContainer}>
           <View style={styles.nameRow}>
             <Text style={styles.name} numberOfLines={1}>
@@ -64,43 +44,35 @@ export const UserCard = ({
             {user.email}
           </Text>
 
-          {user.role === 'Member' && user.flatNumber && (
-            <View style={styles.metaRow}>
-              <Ionicons name="business-outline" size={13} color={COLORS.textSecondary} />
-              <Text style={styles.flatText}>{user.flatNumber}</Text>
-            </View>
-          )}
-
-          {user.phone && (
-            <View style={styles.metaRow}>
-              <Ionicons name="call-outline" size={13} color={COLORS.textMuted} />
-              <Text style={styles.phoneText}>{user.phone}</Text>
-            </View>
-          )}
+          <View style={styles.metaRow}>
+            {user.role === 'Member' && user.flatNumber && (
+              <View style={styles.metaItem}>
+                <Ionicons name="business-outline" size={12} color={COLORS.textMuted} />
+                <Text style={styles.metaText}>{user.flatNumber}</Text>
+              </View>
+            )}
+            {user.phone && (
+              <View style={styles.metaItem}>
+                <Ionicons name="call-outline" size={12} color={COLORS.textMuted} />
+                <Text style={styles.metaText}>{user.phone}</Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
 
-      {/* Action Buttons (Edit / Delete) */}
       {(onEdit || onDelete) && user.role !== 'Admin' && (
         <View style={styles.actionRow}>
           {onEdit && (
-            <TouchableOpacity
-              onPress={onEdit}
-              style={styles.actionButton}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="pencil-outline" size={16} color={COLORS.primaryLight} />
+            <TouchableOpacity onPress={onEdit} style={styles.actionButton} activeOpacity={0.7}>
+              <Ionicons name="pencil-outline" size={15} color={COLORS.text} />
               <Text style={styles.editText}>Edit</Text>
             </TouchableOpacity>
           )}
 
           {onDelete && (
-            <TouchableOpacity
-              onPress={onDelete}
-              style={[styles.actionButton, styles.deleteButton]}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="trash-outline" size={16} color={COLORS.danger} />
+            <TouchableOpacity onPress={onDelete} style={styles.actionButton} activeOpacity={0.7}>
+              <Ionicons name="trash-outline" size={15} color={COLORS.danger} />
               <Text style={styles.deleteText}>Delete</Text>
             </TouchableOpacity>
           )}
@@ -114,10 +86,9 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
-    padding: SPACING.md + 2,
+    padding: SPACING.lg,
     marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOWS.card,
   },
   contentRow: {
     flexDirection: 'row',
@@ -127,7 +98,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    borderWidth: 1.5,
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,
@@ -135,6 +106,8 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 16,
     fontWeight: '700',
+    color: COLORS.white,
+    letterSpacing: 0.3,
   },
   infoContainer: {
     flex: 1,
@@ -143,58 +116,55 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 2,
+    marginBottom: 3,
   },
   name: {
     ...TYPOGRAPHY.h3,
     color: COLORS.text,
     flex: 1,
     marginRight: SPACING.sm,
+    fontSize: 15.5,
   },
   email: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
-    marginBottom: 4,
+    color: COLORS.textMuted,
+    marginBottom: 5,
+    fontSize: 12.5,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 2,
+    gap: SPACING.md,
+    flexWrap: 'wrap',
   },
-  flatText: {
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  metaText: {
     ...TYPOGRAPHY.small,
     color: COLORS.textSecondary,
-    fontWeight: '600',
-  },
-  phoneText: {
-    ...TYPOGRAPHY.small,
-    color: COLORS.textMuted,
+    fontWeight: '500',
   },
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: SPACING.sm,
     marginTop: SPACING.md,
-    paddingTop: SPACING.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 7,
     paddingHorizontal: 12,
     borderRadius: RADIUS.sm,
     backgroundColor: COLORS.surfaceElevated,
-    gap: 4,
-  },
-  deleteButton: {
-    backgroundColor: COLORS.dangerBg,
+    gap: 5,
   },
   editText: {
     ...TYPOGRAPHY.small,
-    color: COLORS.primaryLight,
+    color: COLORS.text,
     fontWeight: '600',
   },
   deleteText: {

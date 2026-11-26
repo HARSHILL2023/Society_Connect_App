@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from '../../constants/theme';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../constants/theme';
 import Badge from '../common/Badge';
 
 export const TicketCard = ({
@@ -45,16 +45,15 @@ export const TicketCard = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      activeOpacity={0.75}
+      activeOpacity={0.85}
       style={[styles.card, style]}
     >
-      {/* Top row: Category icon, Category name, and Status Badge */}
       <View style={styles.topRow}>
         <View style={styles.categoryPill}>
           <Ionicons
             name={getCategoryIcon(ticket.category)}
-            size={14}
-            color={COLORS.primaryLight}
+            size={13}
+            color={COLORS.text}
             style={styles.categoryIcon}
           />
           <Text style={styles.categoryText}>{ticket.category}</Text>
@@ -63,31 +62,24 @@ export const TicketCard = ({
         <Badge label={ticket.status} variant={ticket.status} size="sm" />
       </View>
 
-      {/* Ticket Title */}
       <Text style={styles.title} numberOfLines={2}>
         {ticket.title}
       </Text>
 
-      {/* Description Snippet */}
       <Text style={styles.description} numberOfLines={2}>
         {ticket.description}
       </Text>
 
-      {/* Evidence indicator */}
       {ticket.evidenceImage ? (
-        <View style={styles.evidenceRow}>
-          <View style={styles.evidencePill}>
-            <Ionicons name="image-outline" size={12} color={COLORS.primaryLight} />
-            <Text style={styles.evidencePillText}>Photo</Text>
-          </View>
+        <View style={styles.evidencePill}>
+          <Ionicons name="image-outline" size={12} color={COLORS.textSecondary} />
+          <Text style={styles.evidencePillText}>Photo attached</Text>
         </View>
       ) : null}
 
-      {/* Bottom Metadata row */}
       <View style={styles.footerRow}>
-        {/* Flat info or Resident info */}
         <View style={styles.flatTag}>
-          <Ionicons name="business-outline" size={13} color={COLORS.textSecondary} />
+          <Ionicons name="business-outline" size={13} color={COLORS.textMuted} />
           <Text style={styles.flatText}>
             {ticket.flatNumber || ticket.raisedBy?.flatNumber || 'Flat N/A'}
           </Text>
@@ -103,7 +95,6 @@ export const TicketCard = ({
         )}
 
         <View style={styles.dateTag}>
-          <Ionicons name="time-outline" size={13} color={COLORS.textMuted} />
           <Text style={styles.dateText}>{formatDate(ticket.createdAt)}</Text>
         </View>
       </View>
@@ -115,97 +106,92 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
-    padding: SPACING.md + 2,
+    padding: SPACING.lg,
     marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    ...SHADOWS.card,
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   categoryPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-    borderRadius: RADIUS.sm,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(99, 102, 241, 0.25)',
+    backgroundColor: COLORS.surfaceElevated,
+    borderRadius: RADIUS.full,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
   },
   categoryIcon: {
-    marginRight: 4,
+    marginRight: 5,
   },
   categoryText: {
     ...TYPOGRAPHY.small,
-    color: COLORS.primaryLight,
+    color: COLORS.text,
     fontWeight: '600',
   },
   title: {
     ...TYPOGRAPHY.h3,
     color: COLORS.text,
-    marginBottom: 4,
+    marginBottom: 5,
   },
   description: {
     ...TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
-    lineHeight: 18,
+    lineHeight: 19,
   },
   footerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: SPACING.sm,
-    paddingTop: SPACING.sm,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    gap: SPACING.md,
   },
   flatTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 5,
   },
   flatText: {
-    ...TYPOGRAPHY.captionBold,
-    color: COLORS.text,
+    ...TYPOGRAPHY.small,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
   },
   residentTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    maxWidth: 120,
+    gap: 5,
+    maxWidth: 110,
   },
   residentText: {
     ...TYPOGRAPHY.small,
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
   },
   dateTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
     marginLeft: 'auto',
   },
   dateText: {
     ...TYPOGRAPHY.small,
     color: COLORS.textMuted,
   },
-  evidenceRow: { flexDirection: 'row', gap: 6, marginBottom: SPACING.sm },
   evidencePill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(16,185,129,0.12)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    alignSelf: 'flex-start',
+    gap: 5,
+    backgroundColor: COLORS.surfaceElevated,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
     borderRadius: RADIUS.full,
-    borderWidth: 1,
-    borderColor: 'rgba(16,185,129,0.2)',
+    marginBottom: SPACING.md,
   },
-  evidencePillText: { ...TYPOGRAPHY.small, color: COLORS.primaryLight, fontWeight: '600', fontSize: 10 },
+  evidencePillText: {
+    ...TYPOGRAPHY.small,
+    color: COLORS.textSecondary,
+    fontWeight: '500',
+    fontSize: 10.5,
+  },
 });
 
 export default TicketCard;
