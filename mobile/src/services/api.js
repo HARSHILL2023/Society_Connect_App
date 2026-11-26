@@ -1,36 +1,24 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { storage } from '../utils/storage';
 
-// Find the LAN IP that Expo is using (e.g. 192.168.1.238 from "192.168.1.238:8081")
-const getExpoHostIp = () => {
-  try {
-    const hostUri = Constants.expoConfig?.hostUri || Constants.manifest?.hostUri;
-    if (hostUri) {
-      const host = hostUri.split(':')[0];
-      if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) return host;
-    }
-  } catch {}
-  return null;
-};
+// Deployed backend (Render). Used whenever no override is provided.
+export const PRODUCTION_API_URL = 'https://society-connect-app.onrender.com/api';
 
-// Decide which backend URL to use
+const normalize = (url) => (url ? url.trim().replace(/\/+$/, '') : null);
+
+// Decide which backend URL to use: env override, then app.json extra, then production.
 const getBaseUrl = () => {
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
-  }
+  const fromEnv = normalize(process.env.EXPO_PUBLIC_API_URL);
+  if (fromEnv) return fromEnv;
 
   // Fallback to app.json extra.apiUrl (useful when .env not reloaded)
-  const extraUrl = Constants.expoConfig?.extra?.apiUrl || Constants.manifest?.extra?.apiUrl;
+  const extraUrl = normalize(
+    Constants.expoConfig?.extra?.apiUrl || Constants.manifest?.extra?.apiUrl
+  );
   if (extraUrl) return extraUrl;
 
-  const expoIp = getExpoHostIp();
-  if (expoIp) return `http://${expoIp}:5000/api`;
-
-  if (Platform.OS === 'android') return 'http://10.0.2.2:5000/api';
-
-  return 'http://localhost:5000/api';
+  return PRODUCTION_API_URL;
 };
 
 export const API_BASE_URL = getBaseUrl();
@@ -41,7 +29,8 @@ if (__DEV__) {
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  // Render's free tier can cold-start, so allow extra time for the first request.
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -87,7 +76,7 @@ export const getErrorMessage = (error) => {
       error.message?.includes('Network Error') ||
       error.message?.includes('Cannot reach'));
   if (isNetworkError) {
-    return `Network Error: cannot reach backend at ${API_BASE_URL}. Ensure phone & laptop are on same Wi-Fi (192.168.1.x), backend is running (npm run dev), and firewall allows port 5000.`;
+    return `Network Error: cannot reach backend at ${API_BASE_URL}. Check your internet connection and try again.`;
   }
   if (error.message) return error.message;
   return 'Something went wrong. Please try again.';

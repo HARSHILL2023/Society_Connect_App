@@ -26,15 +26,26 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.USE_BIOMETRIC",
-        "android.permission.USE_FINGERPRINT"
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "http://192.168.1.170:5000/api",
-      "productionApiUrl": "https://society-connect-backend.onrender.com/api"
+      "apiUrl": "https://society-connect-app.onrender.com/api",
+      "productionApiUrl": "https://society-connect-app.onrender.com/api",
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "e82cd0bc-8d76-4e62-a04a-5b465d5892e1"
+      }
     },
     "plugins": [
       [
